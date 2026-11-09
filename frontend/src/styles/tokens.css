@@ -1,0 +1,54 @@
+:root {
+  /* Color: light theme (SPEC 12.2 with AA contrast tuned values documented in decisions.md) */
+  --bg: #FAF8F4;
+  --surface: #FFFFFF;
+  --surface-sunken: #F3EFE8;
+  --border: #E4DED3;
+  --border-strong: #CFC7B8;
+  --ink: #1F2421;
+  --ink-muted: #5E655F;
+  --ink-faint: #727973;
+  --primary: #2F5D50;
+  --primary-hover: #264B41;
+  --primary-tint: #E6EFEB;
+  --accent: #9E4429;
+  --success: #376E46;
+  --warning: #855909;
+  --danger: #A63D2F;
+  --info: #35607F;
+
+  /* Elevation shadow: subtle, only for dialogs and popovers per SPEC 12.2 */
+  --shadow-overlay: 0 4px 20px -2px rgba(31, 36, 33, 0.08), 0 2px 6px -1px rgba(31, 36, 33, 0.04);
+
+  /* Radii per SPEC 12.2 */
+  --radius-sm: 4px; /* inputs, chips */
+  --radius-md: 6px; /* buttons */
+  --radius-lg: 8px; /* panels */
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+}
+
+.dark,
+[data-theme="dark"] {
+  /* Color: dark theme (SPEC 12.2) */
+  --bg: #141816;
+  --surface: #1B201D;
+  --surface-sunken: #222823;
+  --border: #2E3530;
+  --border-strong: #434D46;
+  --ink: #ECEAE4;
+  --ink-muted: #A4ADA6;
+  --ink-faint: #78827A;
+  --primary: #6FA593;
+  --primary-hover: #85B7A6;
+  --primary-tint: #1B2C24;
+  --accent: #D98062;
+  --success: #5FA872;
+  --warning: #D9A34A;
+  --danger: #E06B5A;
+  --info: #65A3D0;
+
+  --shadow-overlay: 0 8px 32px -4px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--primary);
+}
