@@ -290,6 +290,259 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/groups/{id}/ledger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Group Ledger
+         * @description Returns the group ledger entries, trial balance summary, and verification that sum(debits) == sum(credits).
+         */
+        get: operations["get_group_ledger_api_v1_groups__id__ledger_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/members/{id}/passbook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Member Passbook
+         * @description Returns the per-member savings passbook with running balance.
+         *     Columns: Date, Particulars, Debit, Credit, Balance (SPEC 12.4, 12.5 Screen 5).
+         */
+        get: operations["get_member_passbook_api_v1_members__id__passbook_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ledger/entries/{id}/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reverse Entry Endpoint
+         * @description ADMIN only: reverses a journal entry with an audit reason.
+         *     Posts an exact mirror entry (swapping debits and credits) and links reverses_entry_id.
+         */
+        post: operations["reverse_entry_endpoint_api_v1_ledger_entries__id__reverse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{id}/savings-dues/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Dues Endpoint
+         * @description Generates a savings_dues record for each active member in the group for the given period.
+         */
+        post: operations["generate_dues_endpoint_api_v1_groups__id__savings_dues_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{id}/savings-dues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Group Savings Dues
+         * @description Lists savings dues for a group, optionally filtered by period (YYYY-MM).
+         */
+        get: operations["list_group_savings_dues_api_v1_groups__id__savings_dues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/members/{id}/savings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Member Savings Summary
+         * @description Returns a member's total accumulated savings balance and active pending dues.
+         */
+        get: operations["get_member_savings_summary_api_v1_members__id__savings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/savings/collect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collect Savings Endpoint
+         * @description Records collection of savings (+ optional fine) for a member.
+         *     Enforces double-entry ledger posting, updates savings_dues, and handles idempotency.
+         */
+        post: operations["collect_savings_endpoint_api_v1_savings_collect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/savings/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Savings Endpoint
+         * @description Processes a savings withdrawal (e.g. member exit settlement).
+         *     Enforces double-entry ledger posting and validates balance sufficiency.
+         */
+        post: operations["withdraw_savings_endpoint_api_v1_savings_withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{id}/meetings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Group Meetings
+         * @description Lists meetings for a given self-help group.
+         */
+        get: operations["list_group_meetings_api_v1_groups__id__meetings_get"];
+        put?: never;
+        /**
+         * Schedule Meeting
+         * @description Schedules a new SHG meeting.
+         */
+        post: operations["schedule_meeting_api_v1_groups__id__meetings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/meetings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Meeting Detail
+         * @description Returns meeting details including attendance registers.
+         */
+        get: operations["get_meeting_detail_api_v1_meetings__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Meeting
+         * @description Updates meeting status, agenda, or minute book.
+         */
+        patch: operations["update_meeting_api_v1_meetings__id__patch"];
+        trace?: never;
+    };
+    "/api/v1/meetings/{id}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Meeting Attendance
+         * @description Bulk records member attendance for a meeting.
+         */
+        put: operations["update_meeting_attendance_api_v1_meetings__id__attendance_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/meetings/{id}/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Batch Meeting Collections
+         * @description SPEC 4.3 & 8: Batch endpoint to record savings and fines for many members at once.
+         *     Posts a single balanced, atomic journal entry and updates member savings dues idempotently.
+         */
+        post: operations["batch_meeting_collections_api_v1_meetings__id__collections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -335,6 +588,26 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AttendanceRecord */
+        AttendanceRecord: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** @default PRESENT */
+            status: components["schemas"]["AttendanceStatus"];
+        };
+        /**
+         * AttendanceStatus
+         * @enum {string}
+         */
+        AttendanceStatus: "PRESENT" | "ABSENT" | "EXCUSED";
+        /** AttendanceUpdateRequest */
+        AttendanceUpdateRequest: {
+            /** Attendance */
+            attendance: components["schemas"]["AttendanceRecord"][];
+        };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
             /** Current Password */
@@ -416,6 +689,100 @@ export interface components {
          * @enum {string}
          */
         InterestType: "FLAT" | "REDUCING";
+        /** JournalEntryResponse */
+        JournalEntryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Entry Date
+             * Format: date
+             */
+            entry_date: string;
+            /** Description */
+            description: string;
+            source_type: components["schemas"]["JournalSourceType"];
+            /** Source Id */
+            source_id?: string | null;
+            /** Reverses Entry Id */
+            reverses_entry_id?: string | null;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+            /**
+             * Posted By
+             * Format: uuid
+             */
+            posted_by: string;
+            /**
+             * Posted At
+             * Format: date-time
+             */
+            posted_at: string;
+            /**
+             * Lines
+             * @default []
+             */
+            lines: components["schemas"]["JournalLineResponse"][];
+        };
+        /** JournalEntryReverseRequest */
+        JournalEntryReverseRequest: {
+            /**
+             * Reason
+             * @description Mandatory audit explanation for reversal
+             */
+            reason: string;
+        };
+        /** JournalLineResponse */
+        JournalLineResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Account Id
+             * Format: uuid
+             */
+            account_id: string;
+            /** Account Code */
+            account_code: string;
+            /** Account Name */
+            account_name: string;
+            /** Debit */
+            debit: string;
+            /** Credit */
+            credit: string;
+        };
+        /**
+         * JournalSourceType
+         * @enum {string}
+         */
+        JournalSourceType: "SAVINGS" | "DISBURSAL" | "REPAYMENT" | "FINE" | "FEE" | "REVERSAL" | "ADJUSTMENT";
+        /** LedgerReportResponse */
+        LedgerReportResponse: {
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Total Debits */
+            total_debits: string;
+            /** Total Credits */
+            total_credits: string;
+            /** Is Balanced */
+            is_balanced: boolean;
+            /** Trial Balance */
+            trial_balance: components["schemas"]["TrialBalanceItem"][];
+            /** Entries */
+            entries: components["schemas"]["JournalEntryResponse"][];
+        };
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -425,6 +792,133 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /** MeetingBatchCollectionItem */
+        MeetingBatchCollectionItem: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /**
+             * Savings Amount
+             * @default 0.00
+             */
+            savings_amount: number | string;
+            /**
+             * Fine Amount
+             * @default 0.00
+             */
+            fine_amount: number | string;
+        };
+        /** MeetingBatchCollectionsRequest */
+        MeetingBatchCollectionsRequest: {
+            /** Period */
+            period: string;
+            /** Collections */
+            collections: components["schemas"]["MeetingBatchCollectionItem"][];
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+        };
+        /** MeetingBatchCollectionsResponse */
+        MeetingBatchCollectionsResponse: {
+            /** Total Collected */
+            total_collected: string;
+            /** Members Count */
+            members_count: number;
+            /**
+             * Journal Entry Id
+             * Format: uuid
+             */
+            journal_entry_id: string;
+        };
+        /** MeetingCreateRequest */
+        MeetingCreateRequest: {
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            /** Agenda */
+            agenda?: string | null;
+        };
+        /** MeetingDetailResponse */
+        MeetingDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            status: components["schemas"]["MeetingStatus"];
+            /** Agenda */
+            agenda?: string | null;
+            /** Minutes */
+            minutes?: string | null;
+            /** Recorded By */
+            recorded_by?: string | null;
+            /**
+             * Attendance Count
+             * @default 0
+             */
+            attendance_count: number;
+            /**
+             * Attendance
+             * @default []
+             */
+            attendance: components["schemas"]["AttendanceRecord"][];
+        };
+        /** MeetingResponse */
+        MeetingResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            status: components["schemas"]["MeetingStatus"];
+            /** Agenda */
+            agenda?: string | null;
+            /** Minutes */
+            minutes?: string | null;
+            /** Recorded By */
+            recorded_by?: string | null;
+            /**
+             * Attendance Count
+             * @default 0
+             */
+            attendance_count: number;
+        };
+        /**
+         * MeetingStatus
+         * @enum {string}
+         */
+        MeetingStatus: "SCHEDULED" | "HELD" | "CANCELLED";
+        /** MeetingUpdateRequest */
+        MeetingUpdateRequest: {
+            status?: components["schemas"]["MeetingStatus"] | null;
+            /** Agenda */
+            agenda?: string | null;
+            /** Minutes */
+            minutes?: string | null;
         };
         /** MemberCreateRequest */
         MemberCreateRequest: {
@@ -462,6 +956,25 @@ export interface components {
             exited_on: string;
             /** Reason */
             reason?: string | null;
+        };
+        /** MemberPassbookResponse */
+        MemberPassbookResponse: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Total Savings Balance */
+            total_savings_balance: string;
+            /** Entries */
+            entries: components["schemas"]["PassbookEntryResponse"][];
         };
         /** MemberResponse */
         MemberResponse: {
@@ -602,6 +1115,36 @@ export interface components {
              */
             page_size: number;
         };
+        /** PassbookEntryResponse */
+        PassbookEntryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Entry Id
+             * Format: uuid
+             */
+            entry_id: string;
+            /**
+             * Entry Date
+             * Format: date
+             */
+            entry_date: string;
+            /** Particulars */
+            particulars: string;
+            /** Debit */
+            debit: string;
+            /** Credit */
+            credit: string;
+            /** Balance */
+            balance: string;
+            /** Is Reversal */
+            is_reversal: boolean;
+            /** Reverses Entry Id */
+            reverses_entry_id?: string | null;
+        };
         /** RefreshRequest */
         RefreshRequest: {
             /** Refresh Token */
@@ -700,6 +1243,105 @@ export interface components {
             bank_account_label?: string | null;
             status?: components["schemas"]["SHGStatus"] | null;
         };
+        /** SavingsCollectRequest */
+        SavingsCollectRequest: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Amount */
+            amount: number | string;
+            /** Period */
+            period: string;
+            /**
+             * Fine Amount
+             * @default 0.00
+             */
+            fine_amount: number | string;
+            /** Entry Date */
+            entry_date?: string | null;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+        };
+        /** SavingsCollectResponse */
+        SavingsCollectResponse: {
+            due: components["schemas"]["SavingsDueResponse"];
+            /** New Savings Balance */
+            new_savings_balance: string;
+            /** Message */
+            message: string;
+        };
+        /** SavingsDueGenerateRequest */
+        SavingsDueGenerateRequest: {
+            /**
+             * Period
+             * @description Billing period in YYYY-MM format
+             */
+            period: string;
+        };
+        /** SavingsDueResponse */
+        SavingsDueResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Period */
+            period: string;
+            /** Amount Due */
+            amount_due: string;
+            /** Amount Paid */
+            amount_paid: string;
+            status: components["schemas"]["SavingsDueStatus"];
+            /** Member Name */
+            member_name?: string | null;
+        };
+        /**
+         * SavingsDueStatus
+         * @enum {string}
+         */
+        SavingsDueStatus: "PENDING" | "PARTIAL" | "PAID" | "OVERDUE";
+        /** SavingsWithdrawRequest */
+        SavingsWithdrawRequest: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Amount */
+            amount: number | string;
+            /** Reason */
+            reason: string;
+            /** Entry Date */
+            entry_date?: string | null;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+        };
+        /** SavingsWithdrawResponse */
+        SavingsWithdrawResponse: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Withdrawn Amount */
+            withdrawn_amount: string;
+            /** New Savings Balance */
+            new_savings_balance: string;
+            /** Message */
+            message: string;
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -712,6 +1354,26 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["UserSummaryResponse"];
+        };
+        /** TrialBalanceItem */
+        TrialBalanceItem: {
+            /**
+             * Account Id
+             * Format: uuid
+             */
+            account_id: string;
+            /** Account Code */
+            account_code: string;
+            /** Account Name */
+            account_name: string;
+            /** Account Type */
+            account_type: string;
+            /** Total Debit */
+            total_debit: string;
+            /** Total Credit */
+            total_credit: string;
+            /** Net Balance */
+            net_balance: string;
         };
         /** UserCreateRequest */
         UserCreateRequest: {
@@ -1551,6 +2213,485 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_group_ledger_api_v1_groups__id__ledger_get: {
+        parameters: {
+            query?: {
+                from_date?: string | null;
+                to_date?: string | null;
+                account_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerReportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_member_passbook_api_v1_members__id__passbook_get: {
+        parameters: {
+            query?: {
+                from_date?: string | null;
+                to_date?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberPassbookResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reverse_entry_endpoint_api_v1_ledger_entries__id__reverse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JournalEntryReverseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_dues_endpoint_api_v1_groups__id__savings_dues_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavingsDueGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavingsDueResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_group_savings_dues_api_v1_groups__id__savings_dues_get: {
+        parameters: {
+            query?: {
+                period?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavingsDueResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_member_savings_summary_api_v1_members__id__savings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    collect_savings_endpoint_api_v1_savings_collect_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavingsCollectRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavingsCollectResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_savings_endpoint_api_v1_savings_withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavingsWithdrawRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavingsWithdrawResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_group_meetings_api_v1_groups__id__meetings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    schedule_meeting_api_v1_groups__id__meetings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_meeting_detail_api_v1_meetings__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_meeting_api_v1_meetings__id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_meeting_attendance_api_v1_meetings__id__attendance_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    batch_meeting_collections_api_v1_meetings__id__collections_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingBatchCollectionsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingBatchCollectionsResponse"];
                 };
             };
             /** @description Validation Error */

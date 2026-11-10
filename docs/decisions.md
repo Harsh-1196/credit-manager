@@ -95,3 +95,46 @@ During Phase 0, all color tokens specified in SPEC Section 12.2 were audited aga
   1. Protects against XSS token harvesting.
   2. Double-submit `shg_csrf_token` cookie and `X-CSRF-Token` header protect mutating endpoints against CSRF attacks.
   3. Refresh token reuse triggers immediate family revocation, neutralizing stolen credentials.
+
+---
+
+## 4. Phase 2 Ledger, Savings & Passbook Architecture Decisions
+
+### 4.1 Double-Entry Enforcement & Append-Only Invariant
+- **Rule**: The general ledger is strictly double-entry. Every transaction posts atomically with `sum(debit) == sum(credit) > 0`. Each journal line must have exactly one non-zero side (debit XOR credit).
+- **Immutability**: `journal_entries` and `journal_lines` tables have no UPDATE or DELETE privileges. Database triggers (`RAISE(ABORT, ...)` on SQLite, `RAISE EXCEPTION` on PostgreSQL) and SQLAlchemy ORM event listeners block any attempt to modify or delete historical records.
+- **Reasoning**:
+  1. Guarantees mathematical trial balance consistency across the life of the SHG.
+  2. Eliminates ledger tampering and preserves an unalterable audit trail.
+
+### 4.2 Member Sub-Account Model
+- **Rule**: On SHG creation, standard group accounts are provisioned (1000 Cash, 1010 Bank, 3000 Group Capital, 4000 Interest Income, 4010 Fines, etc.). For each enrolled member, sub-accounts are automatically generated:
+  - `2000-{member[:8]}`: Member Savings (Liability on SHG books)
+  - `1100-{member[:8]}`: Member Loans Receivable (Asset on SHG books)
+- **Reasoning**:
+  1. Provides per-member ledger granularity while rolling up cleanly into standard account classifications.
+  2. A member's net savings is directly computed from ledger journal lines for `2000-{member}`: `balance = sum(credits) - sum(debits)`.
+
+### 4.3 Reversal Mechanism
+- **Rule**: Reversals are executed by posting a new mirror `JournalEntry` with source type `REVERSAL`, pointing to `reverses_entry_id = original_entry_id` with inverted debits and credits.
+- **Single Reversal Invariant**: A unique database constraint on `reverses_entry_id` ensures an entry can only be reversed once. Reversing a reversal is prohibited (`CANNOT_REVERSE_REVERSAL`).
+- **Reasoning**:
+  1. Follows non-negotiable accounting rules: corrections are reversal entries, never database row updates.
+  2. Requires a descriptive mandatory reason (minimum 5 characters) for full audit compliance.
+
+### 4.4 Idempotency Key Scoping & Conflict Resolution
+- **Rule**: Mutating financial endpoints (`/savings/collect`, `/savings/withdraw`, meetings batch collections) accept an optional `Idempotency-Key` header (or request body field). The server computes `SHA-256(request_payload)` and checks `(scope, key)`.
+  - Same key + identical payload: returns cached HTTP response without re-executing accounting postings.
+  - Same key + different payload: returns `HTTP 409 CONFLICT` (`IDEMPOTENCY_CONFLICT`).
+- **Reasoning**:
+  1. Protects against network retries, double-clicks, and connection dropouts in low-connectivity rural field scenarios.
+
+### 4.5 Ruled-Ledger Passbook Presentation (Screen 5)
+- **Rule**: Passbook records are rendered in a ruled physical ledger style:
+  - Columns: `Date`, `Particulars`, `Debit`, `Credit`, `Balance`.
+  - Debits and credits appear in strictly separate positive columns (never signed numbers). Blank or dash for the uncredited/undebited side.
+  - Indian numeral grouping (`en-IN`), tabular numbers (`tabular-nums font-mono`), right-aligned amounts.
+  - Color is never the sole signal: Reversals carry explicit textual badges (`REVERSAL`).
+- **Reasoning**:
+  1. Directly matches physical rural SHG paper passbooks, reducing cognitive dissonance for field workers and auditors.
+  2. Satisfies accessibility criteria (never relying solely on color to convey financial polarity).

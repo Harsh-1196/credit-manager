@@ -11,6 +11,7 @@ import { Table } from '../../components/ui/Table';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { GroupSettingsTab } from './GroupSettingsTab';
+import { GroupMeetingsTab } from '../meetings/GroupMeetingsTab';
 import { MemberCreateModal } from '../members/MemberCreateModal';
 import {
   Building2,
@@ -353,16 +354,7 @@ export const GroupDetailPage: React.FC = () => {
       )}
 
       {activeTab === 'meetings' && (
-        <div className="bg-[var(--surface)] p-12 rounded border border-[var(--border)] text-center">
-          <Calendar className="w-10 h-10 text-[var(--muted-ink)] mx-auto mb-3" />
-          <h3 className="font-serif text-lg font-bold text-[var(--ink)]">
-            Meeting History & Attendance
-          </h3>
-          <p className="text-xs text-[var(--muted-ink)] max-w-md mx-auto mt-1">
-            Meeting schedules, member attendance registers, minute-taking, and collection books
-            will be activated in Phase 2.
-          </p>
-        </div>
+        <GroupMeetingsTab groupId={id!} />
       )}
 
       {/* Member Enrollment Modal */}

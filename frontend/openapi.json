@@ -1208,6 +1208,926 @@
         }
       }
     },
+    "/api/v1/groups/{id}/ledger": {
+      "get": {
+        "tags": [
+          "ledger",
+          "ledger"
+        ],
+        "summary": "Get Group Ledger",
+        "description": "Returns the group ledger entries, trial balance summary, and verification that sum(debits) == sum(credits).",
+        "operationId": "get_group_ledger_api_v1_groups__id__ledger_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/members/{id}/passbook": {
+      "get": {
+        "tags": [
+          "ledger",
+          "ledger"
+        ],
+        "summary": "Get Member Passbook",
+        "description": "Returns the per-member savings passbook with running balance.\nColumns: Date, Particulars, Debit, Credit, Balance (SPEC 12.4, 12.5 Screen 5).",
+        "operationId": "get_member_passbook_api_v1_members__id__passbook_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberPassbookResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ledger/entries/{id}/reverse": {
+      "post": {
+        "tags": [
+          "ledger",
+          "ledger"
+        ],
+        "summary": "Reverse Entry Endpoint",
+        "description": "ADMIN only: reverses a journal entry with an audit reason.\nPosts an exact mirror entry (swapping debits and credits) and links reverses_entry_id.",
+        "operationId": "reverse_entry_endpoint_api_v1_ledger_entries__id__reverse_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JournalEntryReverseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JournalEntryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/savings-dues/generate": {
+      "post": {
+        "tags": [
+          "savings",
+          "savings"
+        ],
+        "summary": "Generate Dues Endpoint",
+        "description": "Generates a savings_dues record for each active member in the group for the given period.",
+        "operationId": "generate_dues_endpoint_api_v1_groups__id__savings_dues_generate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavingsDueGenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavingsDueResponse"
+                  },
+                  "title": "Response Generate Dues Endpoint Api V1 Groups  Id  Savings Dues Generate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/savings-dues": {
+      "get": {
+        "tags": [
+          "savings",
+          "savings"
+        ],
+        "summary": "List Group Savings Dues",
+        "description": "Lists savings dues for a group, optionally filtered by period (YYYY-MM).",
+        "operationId": "list_group_savings_dues_api_v1_groups__id__savings_dues_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavingsDueResponse"
+                  },
+                  "title": "Response List Group Savings Dues Api V1 Groups  Id  Savings Dues Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/members/{id}/savings": {
+      "get": {
+        "tags": [
+          "savings",
+          "savings"
+        ],
+        "summary": "Get Member Savings Summary",
+        "description": "Returns a member's total accumulated savings balance and active pending dues.",
+        "operationId": "get_member_savings_summary_api_v1_members__id__savings_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Member Savings Summary Api V1 Members  Id  Savings Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/savings/collect": {
+      "post": {
+        "tags": [
+          "savings",
+          "savings"
+        ],
+        "summary": "Collect Savings Endpoint",
+        "description": "Records collection of savings (+ optional fine) for a member.\nEnforces double-entry ledger posting, updates savings_dues, and handles idempotency.",
+        "operationId": "collect_savings_endpoint_api_v1_savings_collect_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavingsCollectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavingsCollectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/savings/withdraw": {
+      "post": {
+        "tags": [
+          "savings",
+          "savings"
+        ],
+        "summary": "Withdraw Savings Endpoint",
+        "description": "Processes a savings withdrawal (e.g. member exit settlement).\nEnforces double-entry ledger posting and validates balance sufficiency.",
+        "operationId": "withdraw_savings_endpoint_api_v1_savings_withdraw_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavingsWithdrawRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavingsWithdrawResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/meetings": {
+      "get": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "List Group Meetings",
+        "description": "Lists meetings for a given self-help group.",
+        "operationId": "list_group_meetings_api_v1_groups__id__meetings_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MeetingResponse"
+                  },
+                  "title": "Response List Group Meetings Api V1 Groups  Id  Meetings Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "Schedule Meeting",
+        "description": "Schedules a new SHG meeting.",
+        "operationId": "schedule_meeting_api_v1_groups__id__meetings_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetingCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meetings/{id}": {
+      "get": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "Get Meeting Detail",
+        "description": "Returns meeting details including attendance registers.",
+        "operationId": "get_meeting_detail_api_v1_meetings__id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "Update Meeting",
+        "description": "Updates meeting status, agenda, or minute book.",
+        "operationId": "update_meeting_api_v1_meetings__id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetingUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meetings/{id}/attendance": {
+      "put": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "Update Meeting Attendance",
+        "description": "Bulk records member attendance for a meeting.",
+        "operationId": "update_meeting_attendance_api_v1_meetings__id__attendance_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendanceUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meetings/{id}/collections": {
+      "post": {
+        "tags": [
+          "meetings",
+          "meetings"
+        ],
+        "summary": "Batch Meeting Collections",
+        "description": "SPEC 4.3 & 8: Batch endpoint to record savings and fines for many members at once.\nPosts a single balanced, atomic journal entry and updates member savings dues idempotently.",
+        "operationId": "batch_meeting_collections_api_v1_meetings__id__collections_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetingBatchCollectionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeetingBatchCollectionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -1263,6 +2183,49 @@
   },
   "components": {
     "schemas": {
+      "AttendanceRecord": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AttendanceStatus",
+            "default": "PRESENT"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id"
+        ],
+        "title": "AttendanceRecord"
+      },
+      "AttendanceStatus": {
+        "type": "string",
+        "enum": [
+          "PRESENT",
+          "ABSENT",
+          "EXCUSED"
+        ],
+        "title": "AttendanceStatus"
+      },
+      "AttendanceUpdateRequest": {
+        "properties": {
+          "attendance": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceRecord"
+            },
+            "type": "array",
+            "title": "Attendance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attendance"
+        ],
+        "title": "AttendanceUpdateRequest"
+      },
       "ChangePasswordRequest": {
         "properties": {
           "current_password": {
@@ -1499,6 +2462,210 @@
         ],
         "title": "InterestType"
       },
+      "JournalEntryResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "entry_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Entry Date"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/JournalSourceType"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "reverses_entry_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reverses Entry Id"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "posted_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Posted By"
+          },
+          "posted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Posted At"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/JournalLineResponse"
+            },
+            "type": "array",
+            "title": "Lines",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shg_id",
+          "entry_date",
+          "description",
+          "source_type",
+          "posted_by",
+          "posted_at"
+        ],
+        "title": "JournalEntryResponse"
+      },
+      "JournalEntryReverseRequest": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason",
+            "description": "Mandatory audit explanation for reversal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "JournalEntryReverseRequest"
+      },
+      "JournalLineResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Account Id"
+          },
+          "account_code": {
+            "type": "string",
+            "title": "Account Code"
+          },
+          "account_name": {
+            "type": "string",
+            "title": "Account Name"
+          },
+          "debit": {
+            "type": "string",
+            "title": "Debit"
+          },
+          "credit": {
+            "type": "string",
+            "title": "Credit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "account_id",
+          "account_code",
+          "account_name",
+          "debit",
+          "credit"
+        ],
+        "title": "JournalLineResponse"
+      },
+      "JournalSourceType": {
+        "type": "string",
+        "enum": [
+          "SAVINGS",
+          "DISBURSAL",
+          "REPAYMENT",
+          "FINE",
+          "FEE",
+          "REVERSAL",
+          "ADJUSTMENT"
+        ],
+        "title": "JournalSourceType"
+      },
+      "LedgerReportResponse": {
+        "properties": {
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "total_debits": {
+            "type": "string",
+            "title": "Total Debits"
+          },
+          "total_credits": {
+            "type": "string",
+            "title": "Total Credits"
+          },
+          "is_balanced": {
+            "type": "boolean",
+            "title": "Is Balanced"
+          },
+          "trial_balance": {
+            "items": {
+              "$ref": "#/components/schemas/TrialBalanceItem"
+            },
+            "type": "array",
+            "title": "Trial Balance"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/JournalEntryResponse"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shg_id",
+          "total_debits",
+          "total_credits",
+          "is_balanced",
+          "trial_balance",
+          "entries"
+        ],
+        "title": "LedgerReportResponse"
+      },
       "LoginRequest": {
         "properties": {
           "email": {
@@ -1518,6 +2685,322 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "MeetingBatchCollectionItem": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "savings_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Savings Amount",
+            "default": "0.00"
+          },
+          "fine_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Fine Amount",
+            "default": "0.00"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id"
+        ],
+        "title": "MeetingBatchCollectionItem"
+      },
+      "MeetingBatchCollectionsRequest": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$",
+            "title": "Period"
+          },
+          "collections": {
+            "items": {
+              "$ref": "#/components/schemas/MeetingBatchCollectionItem"
+            },
+            "type": "array",
+            "title": "Collections"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "collections"
+        ],
+        "title": "MeetingBatchCollectionsRequest"
+      },
+      "MeetingBatchCollectionsResponse": {
+        "properties": {
+          "total_collected": {
+            "type": "string",
+            "title": "Total Collected"
+          },
+          "members_count": {
+            "type": "integer",
+            "title": "Members Count"
+          },
+          "journal_entry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Journal Entry Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_collected",
+          "members_count",
+          "journal_entry_id"
+        ],
+        "title": "MeetingBatchCollectionsResponse"
+      },
+      "MeetingCreateRequest": {
+        "properties": {
+          "meeting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Meeting Date"
+          },
+          "agenda": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agenda"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meeting_date"
+        ],
+        "title": "MeetingCreateRequest"
+      },
+      "MeetingDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "meeting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Meeting Date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MeetingStatus"
+          },
+          "agenda": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agenda"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "recorded_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded By"
+          },
+          "attendance_count": {
+            "type": "integer",
+            "title": "Attendance Count",
+            "default": 0
+          },
+          "attendance": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceRecord"
+            },
+            "type": "array",
+            "title": "Attendance",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shg_id",
+          "meeting_date",
+          "status"
+        ],
+        "title": "MeetingDetailResponse"
+      },
+      "MeetingResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "meeting_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Meeting Date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MeetingStatus"
+          },
+          "agenda": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agenda"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          },
+          "recorded_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded By"
+          },
+          "attendance_count": {
+            "type": "integer",
+            "title": "Attendance Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shg_id",
+          "meeting_date",
+          "status"
+        ],
+        "title": "MeetingResponse"
+      },
+      "MeetingStatus": {
+        "type": "string",
+        "enum": [
+          "SCHEDULED",
+          "HELD",
+          "CANCELLED"
+        ],
+        "title": "MeetingStatus"
+      },
+      "MeetingUpdateRequest": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MeetingStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "agenda": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agenda"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          }
+        },
+        "type": "object",
+        "title": "MeetingUpdateRequest"
       },
       "MemberCreateRequest": {
         "properties": {
@@ -1637,6 +3120,44 @@
           "exited_on"
         ],
         "title": "MemberExitRequest"
+      },
+      "MemberPassbookResponse": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "member_name": {
+            "type": "string",
+            "title": "Member Name"
+          },
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "total_savings_balance": {
+            "type": "string",
+            "title": "Total Savings Balance"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/PassbookEntryResponse"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "member_name",
+          "shg_id",
+          "total_savings_balance",
+          "entries"
+        ],
+        "title": "MemberPassbookResponse"
       },
       "MemberResponse": {
         "properties": {
@@ -2000,6 +3521,69 @@
         ],
         "title": "PaginatedResponse[UserSummaryResponse]"
       },
+      "PassbookEntryResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "entry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entry Id"
+          },
+          "entry_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Entry Date"
+          },
+          "particulars": {
+            "type": "string",
+            "title": "Particulars"
+          },
+          "debit": {
+            "type": "string",
+            "title": "Debit"
+          },
+          "credit": {
+            "type": "string",
+            "title": "Credit"
+          },
+          "balance": {
+            "type": "string",
+            "title": "Balance"
+          },
+          "is_reversal": {
+            "type": "boolean",
+            "title": "Is Reversal"
+          },
+          "reverses_entry_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reverses Entry Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entry_id",
+          "entry_date",
+          "particulars",
+          "debit",
+          "credit",
+          "balance",
+          "is_reversal"
+        ],
+        "title": "PassbookEntryResponse"
+      },
       "RefreshRequest": {
         "properties": {
           "refresh_token": {
@@ -2296,6 +3880,264 @@
         "type": "object",
         "title": "SHGUpdateRequest"
       },
+      "SavingsCollectRequest": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "period": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$",
+            "title": "Period"
+          },
+          "fine_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Fine Amount",
+            "default": "0.00"
+          },
+          "entry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Date"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "amount",
+          "period"
+        ],
+        "title": "SavingsCollectRequest"
+      },
+      "SavingsCollectResponse": {
+        "properties": {
+          "due": {
+            "$ref": "#/components/schemas/SavingsDueResponse"
+          },
+          "new_savings_balance": {
+            "type": "string",
+            "title": "New Savings Balance"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "due",
+          "new_savings_balance",
+          "message"
+        ],
+        "title": "SavingsCollectResponse"
+      },
+      "SavingsDueGenerateRequest": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$",
+            "title": "Period",
+            "description": "Billing period in YYYY-MM format"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period"
+        ],
+        "title": "SavingsDueGenerateRequest"
+      },
+      "SavingsDueResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "shg_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shg Id"
+          },
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "amount_due": {
+            "type": "string",
+            "title": "Amount Due"
+          },
+          "amount_paid": {
+            "type": "string",
+            "title": "Amount Paid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SavingsDueStatus"
+          },
+          "member_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Member Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shg_id",
+          "member_id",
+          "period",
+          "amount_due",
+          "amount_paid",
+          "status"
+        ],
+        "title": "SavingsDueResponse"
+      },
+      "SavingsDueStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PARTIAL",
+          "PAID",
+          "OVERDUE"
+        ],
+        "title": "SavingsDueStatus"
+      },
+      "SavingsWithdrawRequest": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "entry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Date"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "amount",
+          "reason"
+        ],
+        "title": "SavingsWithdrawRequest"
+      },
+      "SavingsWithdrawResponse": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Member Id"
+          },
+          "withdrawn_amount": {
+            "type": "string",
+            "title": "Withdrawn Amount"
+          },
+          "new_savings_balance": {
+            "type": "string",
+            "title": "New Savings Balance"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "withdrawn_amount",
+          "new_savings_balance",
+          "message"
+        ],
+        "title": "SavingsWithdrawResponse"
+      },
       "TokenResponse": {
         "properties": {
           "access_token": {
@@ -2322,6 +4164,50 @@
           "user"
         ],
         "title": "TokenResponse"
+      },
+      "TrialBalanceItem": {
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Account Id"
+          },
+          "account_code": {
+            "type": "string",
+            "title": "Account Code"
+          },
+          "account_name": {
+            "type": "string",
+            "title": "Account Name"
+          },
+          "account_type": {
+            "type": "string",
+            "title": "Account Type"
+          },
+          "total_debit": {
+            "type": "string",
+            "title": "Total Debit"
+          },
+          "total_credit": {
+            "type": "string",
+            "title": "Total Credit"
+          },
+          "net_balance": {
+            "type": "string",
+            "title": "Net Balance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "account_code",
+          "account_name",
+          "account_type",
+          "total_debit",
+          "total_credit",
+          "net_balance"
+        ],
+        "title": "TrialBalanceItem"
       },
       "UserCreateRequest": {
         "properties": {

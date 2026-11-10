@@ -14,6 +14,7 @@ from app.core.money import money_to_str, quantize_money
 from app.db.models.auth import User, UserGroupAccess, UserRole
 from app.db.models.shg import SHG, GroupSettings, Member, MemberStatus, SHGStatus
 from app.db.session import get_db
+from app.domain.ledger.accounts import initialize_shg_chart_of_accounts
 from app.schemas.common import PaginatedResponse
 from app.schemas.shg import (
     GroupSettingsResponse,
@@ -163,6 +164,10 @@ async def create_group(
         penalty_interest_rate=Decimal(s_payload.penalty_interest_rate or "2.000"),
     )
     db.add(settings)
+    await db.flush()
+
+    # Auto-create per-SHG chart of accounts from SPEC section 5
+    await initialize_shg_chart_of_accounts(db, group.id)
     await db.commit()
 
     await record_audit_log(

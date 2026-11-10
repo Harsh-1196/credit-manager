@@ -51,11 +51,7 @@ def compute_row_hash(prev_hash: str | None, payload: dict[str, Any]) -> str:
 
 async def get_latest_audit_hash(db: AsyncSession) -> str | None:
     """Retrieve the row_hash of the most recent audit log entry."""
-    stmt = (
-        select(AuditLog.row_hash)
-        .order_by(desc(AuditLog.occurred_at), desc(AuditLog.created_at))
-        .limit(1)
-    )
+    stmt = select(AuditLog.row_hash).order_by(desc(AuditLog.occurred_at), desc(AuditLog.created_at)).limit(1)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
 

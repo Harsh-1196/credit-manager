@@ -17,6 +17,8 @@ from app.db.models.shg import (
     SHGStatus,
 )
 from app.db.session import AsyncSessionLocal
+from app.domain.ledger.accounts import get_or_create_member_sub_accounts, initialize_shg_chart_of_accounts
+from app.domain.savings.service import collect_member_savings, generate_savings_dues_for_period
 
 
 async def seed_data() -> None:
@@ -160,6 +162,36 @@ async def seed_data() -> None:
         r3 = MemberRole(member_id=m3.id, role=OfficeBearerRole.TREASURER, from_date=date(2025, 1, 15))
         r4 = MemberRole(member_id=m4.id, role=OfficeBearerRole.MEMBER, from_date=date(2025, 2, 1))
         session.add_all([r1, r2, r3, r4])
+        await session.flush()
+
+        print("Seeding chart of accounts and sub-accounts...")
+        await initialize_shg_chart_of_accounts(session, shg.id)
+        for m in [m1, m2, m3, m4]:
+            await get_or_create_member_sub_accounts(session, shg.id, m)
+
+        print("Generating initial savings dues & collection...")
+        period = "2026-10"
+        await generate_savings_dues_for_period(session, shg.id, period)
+
+        # Seed initial collection for Sunita Devi (m1) and Anita Devi (m2)
+        await collect_member_savings(
+            db=session,
+            shg_id=shg.id,
+            member_id=m1.id,
+            amount=Decimal("200.00"),
+            period=period,
+            posted_by=leader_user.id,
+            entry_date=date(2026, 10, 5),
+        )
+        await collect_member_savings(
+            db=session,
+            shg_id=shg.id,
+            member_id=m2.id,
+            amount=Decimal("200.00"),
+            period=period,
+            posted_by=leader_user.id,
+            entry_date=date(2026, 10, 5),
+        )
 
         await session.commit()
         print("\nSeed data successfully created!")

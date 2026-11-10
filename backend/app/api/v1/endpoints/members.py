@@ -13,6 +13,8 @@ from app.core.security import mask_address, mask_phone
 from app.db.models.auth import User, UserRole
 from app.db.models.shg import SHG, Member, MemberRole, MemberStatus
 from app.db.session import get_db
+from app.domain.ledger.accounts import get_or_create_member_sub_accounts
+from app.domain.savings.service import get_member_savings_balance, withdraw_member_savings
 from app.schemas.common import PaginatedResponse
 from app.schemas.member import (
     MemberCreateRequest,
@@ -176,6 +178,10 @@ async def create_group_member(
         from_date=payload.joined_on,
     )
     db.add(member_role)
+    await db.flush()
+
+    # Auto-create member sub-accounts (savings 2000-sub and loans 1100-sub)
+    await get_or_create_member_sub_accounts(db, group_id, member)
     await db.commit()
 
     await record_audit_log(
@@ -344,6 +350,19 @@ async def exit_member(
             code="FORBIDDEN",
             message="Only Administrators and Group Leaders may record a member exit.",
             status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+    # Settle remaining savings via withdrawal entry per SPEC Section 7
+    current_savings = await get_member_savings_balance(db, member.shg_id, member.id)
+    if current_savings > 0:
+        await withdraw_member_savings(
+            db=db,
+            shg_id=member.shg_id,
+            member_id=member.id,
+            amount=current_savings,
+            posted_by=current_user.id,
+            reason=f"Member exit settlement ({payload.reason or 'Exit'})",
+            entry_date=payload.exited_on,
         )
 
     member.status = MemberStatus.EXITED

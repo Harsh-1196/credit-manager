@@ -24,6 +24,7 @@ from app.db.models.shg import (
     SHGStatus,
 )
 from app.db.session import get_db
+from app.domain.ledger.accounts import get_or_create_member_sub_accounts, initialize_shg_chart_of_accounts
 from app.main import app
 
 POSTGRES_TEST_URL = os.environ.get(
@@ -242,6 +243,10 @@ async def test_group(
     await db_session.flush()
 
     db_session.add(MemberRole(member_id=member.id, role=OfficeBearerRole.MEMBER, from_date=date(2025, 1, 1)))
+
+    # Initialize ledger accounts
+    await initialize_shg_chart_of_accounts(db_session, shg.id)
+    await get_or_create_member_sub_accounts(db_session, shg.id, member)
 
     await db_session.commit()
     await db_session.refresh(shg)

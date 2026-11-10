@@ -8,12 +8,15 @@ import { StatusChip } from '../../components/ui/StatusChip';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { MemberExitModal } from './MemberExitModal';
+import { MemberPassbookTab } from './MemberPassbookTab';
+import { MemberSavingsTab } from './MemberSavingsTab';
 import {
   User,
   ArrowLeft,
   Building2,
   CreditCard,
   BookOpen,
+  PiggyBank,
   LogOut,
 } from 'lucide-react';
 
@@ -21,7 +24,7 @@ export const MemberDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'passbook' | 'loans'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'savings' | 'passbook' | 'loans'>('overview');
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const canManage = user?.role === 'ADMIN' || user?.role === 'GROUP_LEADER';
@@ -175,6 +178,19 @@ export const MemberDetailPage: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => setActiveTab('savings')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+              activeTab === 'savings'
+                ? 'bg-[var(--accent-subtle)] text-[var(--primary)] font-semibold'
+                : 'text-[var(--muted-ink)] hover:text-[var(--ink)]'
+            }`}
+          >
+            <PiggyBank className="w-3.5 h-3.5" />
+            Savings & Dues
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('passbook')}
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
               activeTab === 'passbook'
@@ -183,7 +199,7 @@ export const MemberDetailPage: React.FC = () => {
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
-            Passbook & Savings
+            Passbook
           </button>
 
           <button
@@ -327,21 +343,25 @@ export const MemberDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Tab 2: Passbook Placeholder */}
-      {activeTab === 'passbook' && (
-        <div className="bg-[var(--surface)] p-12 rounded border border-[var(--border)] text-center">
-          <BookOpen className="w-10 h-10 text-[var(--muted-ink)] mx-auto mb-3" />
-          <h3 className="font-serif text-lg font-bold text-[var(--ink)]">
-            Member Passbook & Savings Ledger
-          </h3>
-          <p className="text-xs text-[var(--muted-ink)] max-w-md mx-auto mt-1">
-            Mandatory monthly savings deposits, voluntary savings balances, and passbook entries
-            will be activated in Phase 2.
-          </p>
-        </div>
+      {/* Tab 2: Savings & Dues */}
+      {activeTab === 'savings' && (
+        <MemberSavingsTab
+          memberId={member.id}
+          memberName={member.full_name}
+          groupId={member.shg_id}
+        />
       )}
 
-      {/* Tab 3: Loans Placeholder */}
+      {/* Tab 3: Passbook (Screen 5) */}
+      {activeTab === 'passbook' && (
+        <MemberPassbookTab
+          memberId={member.id}
+          memberName={member.full_name}
+          shgId={member.shg_id}
+        />
+      )}
+
+      {/* Tab 4: Loans Placeholder */}
       {activeTab === 'loans' && (
         <div className="bg-[var(--surface)] p-12 rounded border border-[var(--border)] text-center">
           <CreditCard className="w-10 h-10 text-[var(--muted-ink)] mx-auto mb-3" />

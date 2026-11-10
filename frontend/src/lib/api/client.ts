@@ -6,14 +6,25 @@ import type {
   GroupSettingsResponse,
   GroupSettingsUpdateRequest,
   GroupUpdateRequest,
+  JournalEntryResponse,
+  JournalEntryReverseRequest,
+  LedgerReportResponse,
   LoginRequest,
   LoginResponse,
   MeResponse,
+  MeetingDetailResponse,
+  MeetingResponse,
   MemberCreateRequest,
   MemberExitRequest,
+  MemberPassbookResponse,
   MemberResponse,
   MemberUpdateRequest,
   PaginatedResult,
+  SavingsCollectRequest,
+  SavingsCollectResponse,
+  SavingsDueResponse,
+  SavingsWithdrawRequest,
+  SavingsWithdrawResponse,
   UserCreateRequest,
   UserResponse,
   UserUpdateRequest,
@@ -287,6 +298,86 @@ export const api = {
     },
     deactivate: async (id: string): Promise<void> => {
       await request<void>(`/users/${id}`, { method: 'DELETE' });
+    },
+  },
+
+  ledger: {
+    getMemberPassbook: async (memberId: string, fromDate?: string, toDate?: string): Promise<MemberPassbookResponse> => {
+      const sp = new URLSearchParams();
+      if (fromDate) sp.set('from_date', fromDate);
+      if (toDate) sp.set('to_date', toDate);
+      const qs = sp.toString();
+      return request<MemberPassbookResponse>(`/members/${memberId}/passbook${qs ? `?${qs}` : ''}`);
+    },
+    reverseEntry: async (entryId: string, body: JournalEntryReverseRequest): Promise<JournalEntryResponse> => {
+      return request<JournalEntryResponse>(`/ledger/entries/${entryId}/reverse`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    getGroupLedger: async (groupId: string): Promise<LedgerReportResponse> => {
+      return request<LedgerReportResponse>(`/groups/${groupId}/ledger`);
+    },
+  },
+
+  savings: {
+    getMemberSavings: async (memberId: string): Promise<{
+      member_id: string;
+      member_name: string;
+      shg_id: string;
+      total_savings_balance: string;
+      dues: Array<{
+        id: string;
+        period: string;
+        amount_due: string;
+        amount_paid: string;
+        status: string;
+      }>;
+    }> => {
+      return request(`/members/${memberId}/savings`);
+    },
+    getGroupSavingsDues: async (groupId: string, period?: string): Promise<SavingsDueResponse[]> => {
+      const sp = new URLSearchParams();
+      if (period) sp.set('period', period);
+      const qs = sp.toString();
+      return request<SavingsDueResponse[]>(`/groups/${groupId}/savings-dues${qs ? `?${qs}` : ''}`);
+    },
+    generateSavingsDues: async (groupId: string, period: string): Promise<SavingsDueResponse[]> => {
+      return request<SavingsDueResponse[]>(`/groups/${groupId}/savings-dues/generate`, {
+        method: 'POST',
+        body: JSON.stringify({ period }),
+      });
+    },
+    collect: async (body: SavingsCollectRequest, idempotencyKey?: string): Promise<SavingsCollectResponse> => {
+      const headers: Record<string, string> = {};
+      if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
+      }
+      return request<SavingsCollectResponse>('/savings/collect', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+    },
+    withdraw: async (body: SavingsWithdrawRequest, idempotencyKey?: string): Promise<SavingsWithdrawResponse> => {
+      const headers: Record<string, string> = {};
+      if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
+      }
+      return request<SavingsWithdrawResponse>('/savings/withdraw', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+    },
+  },
+
+  meetings: {
+    list: async (groupId: string): Promise<MeetingResponse[]> => {
+      return request<MeetingResponse[]>(`/groups/${groupId}/meetings`);
+    },
+    get: async (meetingId: string): Promise<MeetingDetailResponse> => {
+      return request<MeetingDetailResponse>(`/meetings/${meetingId}`);
     },
   },
 };
