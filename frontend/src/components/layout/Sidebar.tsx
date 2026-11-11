@@ -7,6 +7,8 @@ import {
   ShieldCheck,
   Palette,
   UserCheck,
+  CheckSquare,
+  FilePlus,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -51,11 +53,22 @@ export const Sidebar: React.FC = () => {
         </NavLink>
 
         {(role === 'ADMIN' || role === 'GROUP_LEADER' || role === 'AUDITOR') && (
-          <NavLink to="/members" className={navLinkClass}>
-            <Users className="w-4 h-4 shrink-0" />
-            <span>Members</span>
-          </NavLink>
+          <>
+            <NavLink to="/members" className={navLinkClass}>
+              <Users className="w-4 h-4 shrink-0" />
+              <span>Members</span>
+            </NavLink>
+            <NavLink to="/loans/approvals" className={navLinkClass}>
+              <CheckSquare className="w-4 h-4 shrink-0" />
+              <span>Loan Approvals</span>
+            </NavLink>
+          </>
         )}
+
+        <NavLink to="/loans/apply" className={navLinkClass}>
+          <FilePlus className="w-4 h-4 shrink-0" />
+          <span>Apply for Loan</span>
+        </NavLink>
 
         {role === 'ADMIN' && (
           <>

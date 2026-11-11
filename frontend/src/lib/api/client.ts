@@ -9,6 +9,21 @@ import type {
   JournalEntryResponse,
   JournalEntryReverseRequest,
   LedgerReportResponse,
+  LoanApproveRequest,
+  LoanCreateRequest,
+  LoanDetailResponse,
+  LoanDisbursePreviewResponse,
+  LoanDisburseRequest,
+  LoanPreviewScheduleRequest,
+  LoanPreviewScheduleResponse,
+  LoanRejectRequest,
+  LoanRepayPreviewRequest,
+  LoanRepayPreviewResponse,
+  LoanRepayRequest,
+  LoanResponse,
+  LoanStatusHistoryResponse,
+  LoanWriteOffRequest,
+  PortfolioMetricsResponse,
   LoginRequest,
   LoginResponse,
   MeResponse,
@@ -378,6 +393,96 @@ export const api = {
     },
     get: async (meetingId: string): Promise<MeetingDetailResponse> => {
       return request<MeetingDetailResponse>(`/meetings/${meetingId}`);
+    },
+  },
+
+  loans: {
+    previewSchedule: async (body: LoanPreviewScheduleRequest): Promise<LoanPreviewScheduleResponse> => {
+      return request<LoanPreviewScheduleResponse>('/loans/preview-schedule', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    create: async (body: LoanCreateRequest): Promise<LoanResponse> => {
+      return request<LoanResponse>('/loans', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    list: async (params?: { group_id?: string; member_id?: string; status?: string }): Promise<LoanResponse[]> => {
+      const sp = new URLSearchParams();
+      if (params?.group_id) sp.set('group_id', params.group_id);
+      if (params?.member_id) sp.set('member_id', params.member_id);
+      if (params?.status) sp.set('status', params.status);
+      const qs = sp.toString();
+      return request<LoanResponse[]>(`/loans${qs ? `?${qs}` : ''}`);
+    },
+    get: async (id: string): Promise<LoanDetailResponse> => {
+      return request<LoanDetailResponse>(`/loans/${id}`);
+    },
+    submit: async (id: string): Promise<LoanResponse> => {
+      return request<LoanResponse>(`/loans/${id}/submit`, {
+        method: 'POST',
+      });
+    },
+    approve: async (id: string, body: LoanApproveRequest): Promise<LoanResponse> => {
+      return request<LoanResponse>(`/loans/${id}/approve`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    reject: async (id: string, body: LoanRejectRequest): Promise<LoanResponse> => {
+      return request<LoanResponse>(`/loans/${id}/reject`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    history: async (id: string): Promise<LoanStatusHistoryResponse[]> => {
+      return request<LoanStatusHistoryResponse[]>(`/loans/${id}/history`);
+    },
+    getDisbursePreview: async (id: string): Promise<LoanDisbursePreviewResponse> => {
+      return request<LoanDisbursePreviewResponse>(`/loans/${id}/disburse-preview`);
+    },
+    disburse: async (id: string, body: LoanDisburseRequest, idempotencyKey?: string): Promise<LoanResponse> => {
+      const headers: Record<string, string> = {};
+      if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
+      }
+      return request<LoanResponse>(`/loans/${id}/disburse`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+    },
+    previewRepayment: async (id: string, body: LoanRepayPreviewRequest): Promise<LoanRepayPreviewResponse> => {
+      return request<LoanRepayPreviewResponse>(`/loans/${id}/preview-repayment`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    repay: async (id: string, body: LoanRepayRequest, idempotencyKey?: string): Promise<LoanDetailResponse> => {
+      const headers: Record<string, string> = {};
+      if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
+      }
+      return request<LoanDetailResponse>(`/loans/${id}/repay`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+    },
+    writeOff: async (id: string, body: LoanWriteOffRequest): Promise<LoanResponse> => {
+      return request<LoanResponse>(`/loans/${id}/write-off`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    getPortfolioMetrics: async (params?: { shg_id?: string; as_of_date?: string }): Promise<PortfolioMetricsResponse> => {
+      const sp = new URLSearchParams();
+      if (params?.shg_id) sp.set('shg_id', params.shg_id);
+      if (params?.as_of_date) sp.set('as_of_date', params.as_of_date);
+      const qs = sp.toString();
+      return request<PortfolioMetricsResponse>(`/loans/metrics/portfolio${qs ? `?${qs}` : ''}`);
     },
   },
 };

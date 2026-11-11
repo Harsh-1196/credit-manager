@@ -47,6 +47,31 @@ export type MeetingStatus = components['schemas']['MeetingStatus'];
 export type AttendanceRecord = components['schemas']['AttendanceRecord'];
 export type AttendanceStatus = components['schemas']['AttendanceStatus'];
 
+// Phase 3a & 3b: Loans
+export type LoanResponse = components['schemas']['LoanResponse'];
+export type LoanDetailResponse = components['schemas']['LoanDetailResponse'];
+export type LoanStatus = components['schemas']['LoanStatus'];
+export type LoanScheduleStatus = components['schemas']['LoanScheduleStatus'];
+export type LoanScheduleItemResponse = components['schemas']['LoanScheduleItemResponse'];
+export type LoanCreateRequest = components['schemas']['LoanCreateRequest'];
+export type LoanApproveRequest = components['schemas']['LoanApproveRequest'];
+export type LoanRejectRequest = components['schemas']['LoanRejectRequest'];
+export type LoanPreviewScheduleRequest = components['schemas']['LoanPreviewScheduleRequest'];
+export type LoanPreviewScheduleResponse = components['schemas']['LoanPreviewScheduleResponse'];
+export type LoanStatusHistoryResponse = components['schemas']['LoanStatusHistoryResponse'];
+export type EligibilityResponse = components['schemas']['EligibilityResponse'];
+export type EligibilityCheckItemResponse = components['schemas']['EligibilityCheckItemResponse'];
+
+// Phase 3b: Money movement, disbursal, repayment, portfolio
+export type LoanDisburseRequest = components['schemas']['LoanDisburseRequest'];
+export type LoanDisbursePreviewResponse = components['schemas']['LoanDisbursePreviewResponse'];
+export type LoanRepayRequest = components['schemas']['LoanRepayRequest'];
+export type LoanRepayPreviewRequest = components['schemas']['LoanRepayPreviewRequest'];
+export type LoanRepayPreviewResponse = components['schemas']['LoanRepayPreviewResponse'];
+export type LoanWriteOffRequest = components['schemas']['LoanWriteOffRequest'];
+export type LoanSummaryFiguresResponse = components['schemas']['LoanSummaryFiguresResponse'];
+export type PortfolioMetricsResponse = components['schemas']['PortfolioMetricsResponse'];
+
 export interface PaginatedResult<T> {
   items: T[];
   total: number;

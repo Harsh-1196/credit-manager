@@ -10,6 +10,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { MemberExitModal } from './MemberExitModal';
 import { MemberPassbookTab } from './MemberPassbookTab';
 import { MemberSavingsTab } from './MemberSavingsTab';
+import { MemberLoansTab } from './MemberLoansTab';
 import {
   User,
   ArrowLeft,
@@ -361,18 +362,13 @@ export const MemberDetailPage: React.FC = () => {
         />
       )}
 
-      {/* Tab 4: Loans Placeholder */}
+      {/* Tab 4: Loans */}
       {activeTab === 'loans' && (
-        <div className="bg-[var(--surface)] p-12 rounded border border-[var(--border)] text-center">
-          <CreditCard className="w-10 h-10 text-[var(--muted-ink)] mx-auto mb-3" />
-          <h3 className="font-serif text-lg font-bold text-[var(--ink)]">
-            Credit & Loan Register
-          </h3>
-          <p className="text-xs text-[var(--muted-ink)] max-w-md mx-auto mt-1">
-            Internal loan applications, repayment schedules, interest accruals, and default flags
-            will be activated in Phase 3.
-          </p>
-        </div>
+        <MemberLoansTab
+          memberId={member.id}
+          shgId={member.shg_id}
+          memberName={member.full_name}
+        />
       )}
 
       {/* Exit Modal */}

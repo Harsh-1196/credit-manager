@@ -294,3 +294,101 @@ async def other_group(db_session: AsyncSession) -> SHG:
     await db_session.commit()
     await db_session.refresh(shg)
     return shg
+
+
+@pytest_asyncio.fixture
+async def funded_group_fixture(db_session: AsyncSession, admin_user: User) -> dict:
+    """
+    Sets up an SHG with chart of accounts, funded Cash in Hand (₹50,000),
+    and two members (one leader, one borrower).
+    """
+    from app.db.models.ledger import JournalSourceType
+    from app.domain.ledger.posting import PostingLineDTO, post_journal_entry
+
+    shg = SHG(
+        name="Ekta Mahila Mandal",
+        village="Kashi",
+        district="Varanasi",
+        formation_date=date(2024, 1, 1),
+        meeting_day="WEDNESDAY",
+        meeting_frequency="MONTHLY",
+        status=SHGStatus.ACTIVE,
+    )
+    db_session.add(shg)
+    await db_session.flush()
+
+    settings = GroupSettings(
+        shg_id=shg.id,
+        monthly_saving_amount=Decimal("500.00"),
+        default_interest_rate=Decimal("12.000"),
+        interest_type=InterestType.REDUCING,
+        max_loan_multiple=Decimal("4.00"),
+        min_tenure_months=1,
+        max_tenure_months=36,
+        processing_fee_percent=Decimal("1.000"),
+        penalty_interest_rate=Decimal("2.000"),
+        fine_grace_days=5,
+        prepayment_policy="REDUCE_TENURE",
+    )
+    db_session.add(settings)
+
+    # Leader User
+    leader_user = User(
+        email="leader_ekta@shg.org",
+        password_hash="hash",
+        phone="9876543201",
+        role=UserRole.GROUP_LEADER,
+    )
+    db_session.add(leader_user)
+    await db_session.flush()
+    db_session.add(UserGroupAccess(user_id=leader_user.id, group_id=shg.id))
+
+    # Borrower User
+    borrower_user = User(
+        email="borrower_ekta@shg.org",
+        password_hash="hash",
+        phone="9876543202",
+        role=UserRole.MEMBER,
+    )
+    db_session.add(borrower_user)
+    await db_session.flush()
+    db_session.add(UserGroupAccess(user_id=borrower_user.id, group_id=shg.id))
+
+    # Member Record
+    borrower_member = Member(
+        shg_id=shg.id,
+        user_id=borrower_user.id,
+        full_name="Meera Bai",
+        phone="9876543202",
+        joined_on=date(2024, 1, 1),
+        status=MemberStatus.ACTIVE,
+    )
+    db_session.add(borrower_member)
+
+    # Initialize Chart of Accounts
+    accounts = await initialize_shg_chart_of_accounts(db_session, shg.id)
+    cash_acc = accounts["1000"]
+    corpus_acc = accounts["3000"]
+
+    # Fund the Cash account with ₹50,000 from Group Corpus
+    await post_journal_entry(
+        db=db_session,
+        shg_id=shg.id,
+        entry_date=date(2026, 1, 1),
+        description="Initial Group Corpus Funding",
+        source_type=JournalSourceType.ADJUSTMENT,
+        lines=[
+            PostingLineDTO(account_id=cash_acc.id, debit=Decimal("50000.00"), credit=Decimal("0.00")),
+            PostingLineDTO(account_id=corpus_acc.id, debit=Decimal("0.00"), credit=Decimal("50000.00")),
+        ],
+        posted_by=admin_user.id,
+    )
+
+    await db_session.commit()
+    return {
+        "shg": shg,
+        "leader": leader_user,
+        "borrower": borrower_user,
+        "member": borrower_member,
+        "cash_acc": cash_acc,
+    }

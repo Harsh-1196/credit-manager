@@ -6,6 +6,13 @@ from app.db.models.ledger import (
     JournalLine,
     JournalSourceType,
 )
+from app.db.models.loans import (
+    Loan,
+    LoanSchedule,
+    LoanScheduleStatus,
+    LoanStatus,
+    LoanStatusHistory,
+)
 from app.db.models.meetings import Attendance, AttendanceStatus, Meeting, MeetingStatus
 from app.db.models.platform import AuditLog, IdempotencyRecord
 from app.db.models.savings import SavingsDue, SavingsDueStatus
@@ -46,4 +53,9 @@ __all__ = [
     "AttendanceStatus",
     "SavingsDue",
     "SavingsDueStatus",
+    "Loan",
+    "LoanStatus",
+    "LoanSchedule",
+    "LoanScheduleStatus",
+    "LoanStatusHistory",
 ]

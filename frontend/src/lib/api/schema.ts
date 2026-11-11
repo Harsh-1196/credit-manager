@@ -543,6 +543,283 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/loans/preview-schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Loan Schedule
+         * @description Calculates and previews the repayment schedule and optional eligibility analysis
+         *     without persisting records to the database.
+         */
+        post: operations["preview_loan_schedule_api_v1_loans_preview_schedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Loans
+         * @description Lists loans with optional filters, strictly scoped to caller's permitted groups.
+         */
+        get: operations["list_loans_api_v1_loans_get"];
+        put?: never;
+        /**
+         * Create Loan Application
+         * @description Creates a new loan application in DRAFT status, optionally submitting it immediately.
+         */
+        post: operations["create_loan_application_api_v1_loans_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Loan Application
+         * @description Submits a draft loan application for approval after verifying eligibility criteria.
+         */
+        post: operations["submit_loan_application_api_v1_loans__id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Loan Application
+         * @description Approves a submitted loan application.
+         *     Enforces strict maker-checker policy (creator or applicant cannot approve)
+         *     and optimistic locking with version.
+         */
+        post: operations["approve_loan_application_api_v1_loans__id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Loan Application
+         * @description Rejects a submitted or approved loan application. Requires a mandatory explanatory reason.
+         */
+        post: operations["reject_loan_application_api_v1_loans__id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Loan Detail
+         * @description Retrieves full loan details including schedule, history, eligibility status,
+         *     and maker-checker approval capability for the caller.
+         */
+        get: operations["get_loan_detail_api_v1_loans__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Loan History
+         * @description Retrieves the chronological append-only status transition history for a loan.
+         */
+        get: operations["get_loan_history_api_v1_loans__id__history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/metrics/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Portfolio Metrics
+         * @description Computes live portfolio quality metrics including PAR 30/60/90.
+         *     Scoped by user's permitted groups.
+         */
+        get: operations["get_portfolio_metrics_api_v1_loans_metrics_portfolio_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/disburse-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Loan Disburse Preview
+         * @description Returns preview of journal lines to be posted and checks group cash sufficiency.
+         */
+        get: operations["get_loan_disburse_preview_api_v1_loans__id__disburse_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/disburse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disburse Loan Endpoint
+         * @description Disburses an approved loan per SPEC sections 6.1 and 14:
+         *     - Verifies cash sufficiency
+         *     - Posts double-entry journal entry with locking
+         *     - Generates schedule and moves to ACTIVE
+         */
+        post: operations["disburse_loan_endpoint_api_v1_loans__id__disburse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/preview-repayment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Loan Repayment
+         * @description Pre-calculates live repayment breakdown (penalty, interest, principal, prepayment)
+         *     without modifying the database.
+         */
+        post: operations["preview_loan_repayment_api_v1_loans__id__preview_repayment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/repay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Repay Loan Endpoint
+         * @description Records a loan repayment per SPEC sections 6.4, 6.5, and 14:
+         *     - Multi-line balanced journal entry
+         *     - Row-level locking on loan & schedule
+         *     - Idempotency support
+         *     - Status progression and closure when settled
+         */
+        post: operations["repay_loan_endpoint_api_v1_loans__id__repay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/loans/{id}/write-off": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write Off Loan Endpoint
+         * @description Writes off an overdue loan per SPEC section 6.1 (ADMIN only, reason required).
+         */
+        post: operations["write_off_loan_endpoint_api_v1_loans__id__write_off_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -614,6 +891,45 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** DisburseJournalLine */
+        DisburseJournalLine: {
+            /** Account Code */
+            account_code: string;
+            /** Account Name */
+            account_name: string;
+            /** Debit */
+            debit: string;
+            /** Credit */
+            credit: string;
+        };
+        /** EligibilityCheckItemResponse */
+        EligibilityCheckItemResponse: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Passed */
+            passed: boolean;
+            /** Severity */
+            severity: string;
+            /** Message */
+            message: string;
+            /** Actual Value */
+            actual_value?: string | null;
+            /** Threshold Value */
+            threshold_value?: string | null;
+        };
+        /** EligibilityResponse */
+        EligibilityResponse: {
+            /** Is Eligible */
+            is_eligible: boolean;
+            /** Has Warnings */
+            has_warnings: boolean;
+            /** Summary Message */
+            summary_message: string;
+            /** Checks */
+            checks: components["schemas"]["EligibilityCheckItemResponse"][];
         };
         /** GroupSettingsResponse */
         GroupSettingsResponse: {
@@ -764,7 +1080,7 @@ export interface components {
          * JournalSourceType
          * @enum {string}
          */
-        JournalSourceType: "SAVINGS" | "DISBURSAL" | "REPAYMENT" | "FINE" | "FEE" | "REVERSAL" | "ADJUSTMENT";
+        JournalSourceType: "SAVINGS" | "DISBURSAL" | "REPAYMENT" | "FINE" | "FEE" | "REVERSAL" | "ADJUSTMENT" | "WRITE_OFF";
         /** LedgerReportResponse */
         LedgerReportResponse: {
             /**
@@ -782,6 +1098,462 @@ export interface components {
             trial_balance: components["schemas"]["TrialBalanceItem"][];
             /** Entries */
             entries: components["schemas"]["JournalEntryResponse"][];
+        };
+        /** LoanApproveRequest */
+        LoanApproveRequest: {
+            /**
+             * Version
+             * @description Optimistic locking expected version
+             */
+            version: number;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** LoanCreateRequest */
+        LoanCreateRequest: {
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Purpose */
+            purpose: string;
+            /** Principal */
+            principal: number | string;
+            /** Interest Rate */
+            interest_rate: number | string;
+            /** @default REDUCING */
+            interest_type: components["schemas"]["InterestType"];
+            /** Tenure Months */
+            tenure_months: number;
+            /**
+             * First Due Date
+             * Format: date
+             */
+            first_due_date: string;
+            /**
+             * Submit Immediately
+             * @default false
+             */
+            submit_immediately: boolean;
+        };
+        /** LoanDetailResponse */
+        LoanDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name?: string | null;
+            /** Loan Number */
+            loan_number: string;
+            /** Purpose */
+            purpose: string;
+            /** Principal */
+            principal: string;
+            /** Interest Rate */
+            interest_rate: string;
+            interest_type: components["schemas"]["InterestType"];
+            /** Tenure Months */
+            tenure_months: number;
+            /** Processing Fee */
+            processing_fee: string;
+            status: components["schemas"]["LoanStatus"];
+            /**
+             * Applied By
+             * Format: uuid
+             */
+            applied_by: string;
+            /** Applied At */
+            applied_at?: string | null;
+            /** Approved By */
+            approved_by?: string | null;
+            /** Approved At */
+            approved_at?: string | null;
+            /** Rejection Reason */
+            rejection_reason?: string | null;
+            /** Disbursed At */
+            disbursed_at?: string | null;
+            /** Disbursed By */
+            disbursed_by?: string | null;
+            /** First Due Date */
+            first_due_date?: string | null;
+            /** Closed At */
+            closed_at?: string | null;
+            /** Written Off At */
+            written_off_at?: string | null;
+            /** Written Off By */
+            written_off_by?: string | null;
+            /** Write Off Reason */
+            write_off_reason?: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Can Approve
+             * @default false
+             */
+            can_approve: boolean;
+            /** Maker Checker Note */
+            maker_checker_note?: string | null;
+            /**
+             * Schedule
+             * @default []
+             */
+            schedule: components["schemas"]["LoanScheduleItemResponse"][];
+            /**
+             * History
+             * @default []
+             */
+            history: components["schemas"]["LoanStatusHistoryResponse"][];
+            eligibility?: components["schemas"]["EligibilityResponse"] | null;
+            summary?: components["schemas"]["LoanSummaryFiguresResponse"] | null;
+        };
+        /** LoanDisbursePreviewResponse */
+        LoanDisbursePreviewResponse: {
+            /**
+             * Loan Id
+             * Format: uuid
+             */
+            loan_id: string;
+            /** Loan Number */
+            loan_number: string;
+            /** Member Name */
+            member_name: string;
+            /** Principal */
+            principal: string;
+            /** Processing Fee */
+            processing_fee: string;
+            /** Net Disbursed */
+            net_disbursed: string;
+            /** Group Cash Balance */
+            group_cash_balance: string;
+            /** Has Sufficient Cash */
+            has_sufficient_cash: boolean;
+            /** Journal Lines */
+            journal_lines: components["schemas"]["DisburseJournalLine"][];
+        };
+        /** LoanDisburseRequest */
+        LoanDisburseRequest: {
+            /**
+             * Version
+             * @description Optimistic locking expected version
+             */
+            version: number;
+            /** First Due Date */
+            first_due_date?: string | null;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+        };
+        /** LoanPreviewScheduleRequest */
+        LoanPreviewScheduleRequest: {
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Member Id */
+            member_id?: string | null;
+            /** Principal */
+            principal: number | string;
+            /** Annual Rate */
+            annual_rate: number | string;
+            /** @default REDUCING */
+            interest_type: components["schemas"]["InterestType"];
+            /** Tenure Months */
+            tenure_months: number;
+            /**
+             * First Due Date
+             * Format: date
+             */
+            first_due_date: string;
+        };
+        /** LoanPreviewScheduleResponse */
+        LoanPreviewScheduleResponse: {
+            /** Principal */
+            principal: string;
+            /** Total Interest */
+            total_interest: string;
+            /** Total Amount */
+            total_amount: string;
+            /** Monthly Installment */
+            monthly_installment: string;
+            /** Installments */
+            installments: components["schemas"]["LoanScheduleItemResponse"][];
+            eligibility?: components["schemas"]["EligibilityResponse"] | null;
+        };
+        /** LoanRejectRequest */
+        LoanRejectRequest: {
+            /**
+             * Version
+             * @description Optimistic locking expected version
+             */
+            version: number;
+            /**
+             * Reason
+             * @description Mandatory rejection explanation
+             */
+            reason: string;
+        };
+        /** LoanRepayPreviewRequest */
+        LoanRepayPreviewRequest: {
+            /** Amount */
+            amount: number | string;
+            /** Payment Date */
+            payment_date?: string | null;
+        };
+        /** LoanRepayPreviewResponse */
+        LoanRepayPreviewResponse: {
+            /**
+             * Loan Id
+             * Format: uuid
+             */
+            loan_id: string;
+            /** Loan Number */
+            loan_number: string;
+            /** Payment Amount */
+            payment_amount: string;
+            /** Penalty Allocated */
+            penalty_allocated: string;
+            /** Interest Allocated */
+            interest_allocated: string;
+            /** Principal Allocated */
+            principal_allocated: string;
+            /** Prepayment Principal */
+            prepayment_principal: string;
+            /** Is Loan Fully Paid */
+            is_loan_fully_paid: boolean;
+            /** Remaining Principal After */
+            remaining_principal_after: string;
+            /** Installments Affected */
+            installments_affected: components["schemas"]["RepayInstallmentEffect"][];
+        };
+        /** LoanRepayRequest */
+        LoanRepayRequest: {
+            /** Amount */
+            amount: number | string;
+            /** Payment Date */
+            payment_date?: string | null;
+            /** Version */
+            version?: number | null;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+        };
+        /** LoanResponse */
+        LoanResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name?: string | null;
+            /** Loan Number */
+            loan_number: string;
+            /** Purpose */
+            purpose: string;
+            /** Principal */
+            principal: string;
+            /** Interest Rate */
+            interest_rate: string;
+            interest_type: components["schemas"]["InterestType"];
+            /** Tenure Months */
+            tenure_months: number;
+            /** Processing Fee */
+            processing_fee: string;
+            status: components["schemas"]["LoanStatus"];
+            /**
+             * Applied By
+             * Format: uuid
+             */
+            applied_by: string;
+            /** Applied At */
+            applied_at?: string | null;
+            /** Approved By */
+            approved_by?: string | null;
+            /** Approved At */
+            approved_at?: string | null;
+            /** Rejection Reason */
+            rejection_reason?: string | null;
+            /** Disbursed At */
+            disbursed_at?: string | null;
+            /** Disbursed By */
+            disbursed_by?: string | null;
+            /** First Due Date */
+            first_due_date?: string | null;
+            /** Closed At */
+            closed_at?: string | null;
+            /** Written Off At */
+            written_off_at?: string | null;
+            /** Written Off By */
+            written_off_by?: string | null;
+            /** Write Off Reason */
+            write_off_reason?: string | null;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Can Approve
+             * @default false
+             */
+            can_approve: boolean;
+            /** Maker Checker Note */
+            maker_checker_note?: string | null;
+        };
+        /** LoanScheduleItemResponse */
+        LoanScheduleItemResponse: {
+            /** Installment No */
+            installment_no: number;
+            /**
+             * Due Date
+             * Format: date
+             */
+            due_date: string;
+            /** Principal Due */
+            principal_due: string;
+            /** Interest Due */
+            interest_due: string;
+            /** Total Due */
+            total_due: string;
+            /**
+             * Outstanding Balance
+             * @default 0.00
+             */
+            outstanding_balance: string;
+            /**
+             * Principal Paid
+             * @default 0.00
+             */
+            principal_paid: string;
+            /**
+             * Interest Paid
+             * @default 0.00
+             */
+            interest_paid: string;
+            /**
+             * Penalty Paid
+             * @default 0.00
+             */
+            penalty_paid: string;
+            /**
+             * Penalty Due
+             * @default 0.00
+             */
+            penalty_due: string;
+            /** @default PENDING */
+            status: components["schemas"]["LoanScheduleStatus"];
+            /**
+             * Days Overdue
+             * @default 0
+             */
+            days_overdue: number;
+        };
+        /**
+         * LoanScheduleStatus
+         * @enum {string}
+         */
+        LoanScheduleStatus: "PENDING" | "PARTIAL" | "PAID" | "OVERDUE";
+        /**
+         * LoanStatus
+         * @enum {string}
+         */
+        LoanStatus: "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "DISBURSED" | "ACTIVE" | "OVERDUE" | "CLOSED" | "WRITTEN_OFF";
+        /** LoanStatusHistoryResponse */
+        LoanStatusHistoryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Loan Id
+             * Format: uuid
+             */
+            loan_id: string;
+            from_status: components["schemas"]["LoanStatus"];
+            to_status: components["schemas"]["LoanStatus"];
+            /**
+             * Actor Id
+             * Format: uuid
+             */
+            actor_id: string;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** LoanSummaryFiguresResponse */
+        LoanSummaryFiguresResponse: {
+            /** Outstanding Principal */
+            outstanding_principal: string;
+            /** Outstanding Interest */
+            outstanding_interest: string;
+            /** Outstanding Penalty */
+            outstanding_penalty: string;
+            /** Total Outstanding Balance */
+            total_outstanding_balance: string;
+            /** Total Principal Paid */
+            total_principal_paid: string;
+            /** Total Interest Paid */
+            total_interest_paid: string;
+            /** Total Penalty Paid */
+            total_penalty_paid: string;
+            /** Next Due Date */
+            next_due_date: string | null;
+            /** Next Due Amount */
+            next_due_amount: string;
+            /** Days Overdue */
+            days_overdue: number;
+        };
+        /** LoanWriteOffRequest */
+        LoanWriteOffRequest: {
+            /**
+             * Version
+             * @description Optimistic locking expected version
+             */
+            version: number;
+            /**
+             * Reason
+             * @description Mandatory write-off justification
+             */
+            reason: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -1145,10 +1917,79 @@ export interface components {
             /** Reverses Entry Id */
             reverses_entry_id?: string | null;
         };
+        /** PortfolioMetricsResponse */
+        PortfolioMetricsResponse: {
+            /** Shg Id */
+            shg_id?: string | null;
+            /**
+             * As Of Date
+             * Format: date
+             */
+            as_of_date: string;
+            /** Total Loans Count */
+            total_loans_count: number;
+            /** Active Loans Count */
+            active_loans_count: number;
+            /** Overdue Loans Count */
+            overdue_loans_count: number;
+            /** Closed Loans Count */
+            closed_loans_count: number;
+            /** Written Off Loans Count */
+            written_off_loans_count: number;
+            /** Total Disbursed Principal */
+            total_disbursed_principal: string;
+            /** Total Principal Repaid */
+            total_principal_repaid: string;
+            /** Total Outstanding Principal */
+            total_outstanding_principal: string;
+            /** Total Overdue Principal */
+            total_overdue_principal: string;
+            /** Total Interest Outstanding */
+            total_interest_outstanding: string;
+            /** Total Penalty Outstanding */
+            total_penalty_outstanding: string;
+            /** Par 30 Principal */
+            par_30_principal: string;
+            /** Par 30 Count */
+            par_30_count: number;
+            /** Par 30 Ratio */
+            par_30_ratio: string;
+            /** Par 60 Principal */
+            par_60_principal: string;
+            /** Par 60 Count */
+            par_60_count: number;
+            /** Par 60 Ratio */
+            par_60_ratio: string;
+            /** Par 90 Principal */
+            par_90_principal: string;
+            /** Par 90 Count */
+            par_90_count: number;
+            /** Par 90 Ratio */
+            par_90_ratio: string;
+        };
         /** RefreshRequest */
         RefreshRequest: {
             /** Refresh Token */
             refresh_token?: string | null;
+        };
+        /** RepayInstallmentEffect */
+        RepayInstallmentEffect: {
+            /** Installment No */
+            installment_no: number;
+            /** Due Date */
+            due_date: string;
+            /** Penalty Allocated */
+            penalty_allocated: string;
+            /** Interest Allocated */
+            interest_allocated: string;
+            /** Principal Allocated */
+            principal_allocated: string;
+            /** Total Allocated */
+            total_allocated: string;
+            /** Status Before */
+            status_before: string;
+            /** Status After */
+            status_after: string;
         };
         /** SHGCreateRequest */
         SHGCreateRequest: {
@@ -2692,6 +3533,471 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeetingBatchCollectionsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_loan_schedule_api_v1_loans_preview_schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanPreviewScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanPreviewScheduleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_loans_api_v1_loans_get: {
+        parameters: {
+            query?: {
+                group_id?: string | null;
+                member_id?: string | null;
+                status?: components["schemas"]["LoanStatus"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_loan_application_api_v1_loans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_loan_application_api_v1_loans__id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_loan_application_api_v1_loans__id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_loan_application_api_v1_loans__id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanRejectRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_loan_detail_api_v1_loans__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_loan_history_api_v1_loans__id__history_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanStatusHistoryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_portfolio_metrics_api_v1_loans_metrics_portfolio_get: {
+        parameters: {
+            query?: {
+                shg_id?: string | null;
+                as_of_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioMetricsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_loan_disburse_preview_api_v1_loans__id__disburse_preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanDisbursePreviewResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    disburse_loan_endpoint_api_v1_loans__id__disburse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanDisburseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_loan_repayment_api_v1_loans__id__preview_repayment_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanRepayPreviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanRepayPreviewResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    repay_loan_endpoint_api_v1_loans__id__repay_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanRepayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    write_off_loan_endpoint_api_v1_loans__id__write_off_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoanWriteOffRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanResponse"];
                 };
             };
             /** @description Validation Error */

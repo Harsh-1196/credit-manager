@@ -38,6 +38,7 @@ class JournalSourceType(str, enum.Enum):
     FEE = "FEE"
     REVERSAL = "REVERSAL"
     ADJUSTMENT = "ADJUSTMENT"
+    WRITE_OFF = "WRITE_OFF"
 
 
 class Account(TimestampedUUIDModel):

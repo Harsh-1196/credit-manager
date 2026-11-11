@@ -6,6 +6,9 @@ import { GroupsListPage } from '../features/groups/GroupsListPage';
 import { GroupDetailPage } from '../features/groups/GroupDetailPage';
 import { MembersListPage } from '../features/members/MembersListPage';
 import { MemberDetailPage } from '../features/members/MemberDetailPage';
+import { LoanApplicationPage } from '../features/loans/LoanApplicationPage';
+import { ApprovalsQueuePage } from '../features/loans/ApprovalsQueuePage';
+import { LoanDetailPage } from '../features/loans/LoanDetailPage';
 import { UsersListPage } from '../features/users/UsersListPage';
 import { AuditLogPage } from '../features/audit/AuditLogPage';
 import { StyleguidePage } from '../features/styleguide/StyleguidePage';
@@ -40,6 +43,24 @@ export const router = createBrowserRouter([
           {
             path: '/members/:id',
             element: <MemberDetailPage />,
+          },
+          {
+            path: '/loans/apply',
+            element: <LoanApplicationPage />,
+          },
+          {
+            path: '/loans/approvals',
+            element: <ProtectedRoute allowedRoles={['ADMIN', 'GROUP_LEADER', 'AUDITOR']} />,
+            children: [
+              {
+                path: '',
+                element: <ApprovalsQueuePage />,
+              },
+            ],
+          },
+          {
+            path: '/loans/:id',
+            element: <LoanDetailPage />,
           },
           {
             path: '/users',

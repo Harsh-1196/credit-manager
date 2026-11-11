@@ -84,6 +84,7 @@ class GroupSettings(TimestampedUUIDModel):
     max_tenure_months: Mapped[int] = mapped_column(Integer, default=24, nullable=False)
     processing_fee_percent: Mapped[Decimal] = mapped_column(Numeric(6, 3), default=Decimal("1.000"), nullable=False)
     penalty_interest_rate: Mapped[Decimal] = mapped_column(Numeric(6, 3), default=Decimal("2.000"), nullable=False)
+    prepayment_policy: Mapped[str] = mapped_column(String(50), default="REDUCE_TENURE", nullable=False)
 
     shg: Mapped[SHG] = relationship("SHG", back_populates="settings")
 
