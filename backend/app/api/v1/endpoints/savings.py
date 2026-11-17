@@ -246,7 +246,7 @@ async def collect_savings_endpoint(
         period=payload.period,
         posted_by=current_user.id,
         fine_amount=payload.fine_amount,
-        entry_date=payload.entry_date,
+        entry_date=payload.entry_date or payload.collected_date,
         idempotency_key=idem_key,
     )
     await db.commit()

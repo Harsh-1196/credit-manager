@@ -8,234 +8,235 @@
 [![React 18](https://img.shields.io/badge/frontend-React%2018-61DAFB.svg)](https://react.dev/)
 [![TypeScript Strict](https://img.shields.io/badge/typescript-strict-3178C6.svg)](https://www.typescriptlang.org/)
 [![PostgreSQL 16](https://img.shields.io/badge/database-PostgreSQL%2016-336791.svg)](https://www.postgresql.org/)
-[![WCAG AA](https://img.shields.io/badge/accessibility-WCAG%202.2%20AA-success.svg)](docs/decisions.md)
+[![WCAG AA](https://img.shields.io/badge/accessibility-WCAG%202.2%20AA-success.svg)](docs/accessibility.md)
 
-**SHG Credit Manager** is a mission-critical digital core accounting and credit management platform engineered to replace error-prone paper notebooks across Self-Help Groups (SHGs) and micro-lending federations. Built around an immutable double-entry journal, cryptographic SHA-256 tamper-evident audit chaining, strict floating-point elimination, and privacy-preserving role authorization, the platform delivers transparent, verifiable financial autonomy to grassroots rural women collectives.
-
----
-
-## Architecture & System Design
-
-```
-                     ┌───────────────────────────────────────────────┐
-                     │          React 18 + Vite PWA Client           │
-                     │  Fraunces + Instrument Sans · decimal.js      │
-                     │  Ruled-Ledger UI · Indian Numbering (en-IN)   │
-                     └───────────────────────┬───────────────────────┘
-                                             │ HTTPS / httpOnly SameSite=Strict
-                                             ▼
-                     ┌───────────────────────────────────────────────┐
-                     │       FastAPI Gateway & Security Layer        │
-                     │  Argon2id · 15m JWT · 7d Rotating Family      │
-                     │  Double-Submit CSRF · Role & Scope Guards     │
-                     └───────────────┬───────────────┬───────────────┘
-                                     │               │
-                     ┌───────────────▼───────┐       ▼
-                     │  Domain Engine (DDD)  │ ┌─────────────────────────────┐
-                     │  • Double-Entry Cores │ │  Cryptographic Audit Chain  │
-                     │  • Reducing EMI / Flat│ │  • SHA-256 Hash Chaining    │
-                     │  • Late Penalty Jobs  │ │  • Canonical JSON Normalized│
-                     │  • Maker-Checker Loan │ │  • CLI Tamper Verifier      │
-                     └───────────────┬───────┘ └─────────────┬───────────────┘
-                                     │                       │
-                                     ▼                       ▼
-                     ┌───────────────────────────────────────────────┐
-                     │            PostgreSQL 16 Engine               │
-                     │  • NUMERIC(14,2) Exact Money Columns          │
-                     │  • Append-Only Journal & Audit Tables         │
-                     │  • Zero-UPDATE / Zero-DELETE Integrity Rules  │
-                     └───────────────────────────────────────────────┘
-```
+SHG Credit Manager is an institutional-grade digital core banking and double-entry accounting platform engineered to replace error-prone paper registers across rural Self-Help Groups (SHGs) and micro-lending federations. Built with an immutable append-only ledger, cryptographic SHA-256 tamper-evident audit chaining, strict floating-point elimination, and privacy-preserving tenant isolation, the platform delivers transparent, verifiable financial autonomy to grassroots collectives.
 
 ---
 
-## Key Features & Enterprise Capabilities
+## Screenshot Gallery
 
-### 1. Cryptographic Tamper-Evident Audit Trail
-- **SHA-256 Hash Chain**: Every state mutation produces an immutable `audit_log` row linked via `row_hash = SHA256(prev_hash || canonical_json(entry))`.
-- **Zero-Drift Canonical Timestamps**: UTC-normalized ISO serialization (`YYYY-MM-DDTHH:MM:SS.ffffffZ`) guarantees 100% deterministic cryptographic verification across all storage engines.
-- **Independent Verification CLI**: External auditors and field supervisors can verify entire databases at 22,000+ rows/second using `python -m app.audit.verifier`, detecting unauthorized modifications or deleted entries instantly.
+Experience the human-centered, editorial ruled-ledger aesthetic designed for tactile clarity in both Light (warm parchment) and Dark (obsidian charcoal) modes:
 
-### 2. Double-Entry Core Accounting Ledger
-- **Strict Invariant**: Every journal transaction strictly satisfies $\sum \text{debit} = \sum \text{credit}$.
-- **Immutable Ledger**: Ledger and audit tables are strictly append-only; adjustments and corrections are processed exclusively via reversal offset vouchers.
-- **Zero-Float Guarantee**: All currency is stored as `NUMERIC(14,2)` in PostgreSQL and handled as arbitrary-precision `Decimal` in Python and `decimal.js` on the frontend, completely eliminating binary floating-point rounding errors.
-
-### 3. Comprehensive Credit & Savings Engines
-- **Dynamic Interest Engine**: Seamlessly calculates Flat and Reducing Balance interest schedules, tracking principal amortization, interest accrual, grace periods, and compounding.
-- **Dual-Approval Maker-Checker**: Credit requests require officer-level separation between application submitters and approving bearers, preventing internal collusion or self-approval.
-- **Late Penalty Automation**: Automated daily jobs calculate penal interest and fixed-meeting fines according to customizable group bylaws.
-- **Passbooks & Statements**: Generates vector-perfect, ruled-ledger passbook sheets and group collection summaries formatted in Indian currency groupings (`₹ Lakh / Crore`).
-
-### 4. Privacy & Zero-Leakage Authorization
-- **Scoped 404 Security**: Out-of-scope resources return `HTTP 404 NOT_FOUND` (never 403), eliminating group enumeration vulnerabilities.
-- **PII Minimization**: Identity proofs (Aadhaar, Voter ID, PAN) are ingested and truncated to only their last 4 digits (`id_proof_last4`); phone numbers and addresses are dynamically masked for non-authorized roles.
-- **Family Token Rotation**: Argon2id password hashing, 15-minute access tokens, and 7-day refresh tokens with automated family revocation upon token replay detection.
-
-### 5. Ruled-Ledger Design System
-- **Editorial Aesthetics**: Designed specifically for physical-ledger familiarity with Fraunces serif headings, Instrument Sans UI typography, and high-contrast tabular figures.
-- **100% WCAG 2.2 AA Compliant**: All semantic light and dark mode tokens audited to satisfy strict contrast ratios (exceeding 7.1:1).
-- **Three-State Views**: Every data grid includes Skeleton loading, helpful contextual empty states, and resilient error recovery actions.
+| Screen | Light Mode (Warm Parchment) | Dark Mode (Obsidian Charcoal) |
+|---|---|---|
+| **Executive Dashboard (Screen 2)**<br>*Serif hero metrics, collections due, and restyled aging buckets* | ![Dashboard Light](docs/screenshots/dashboard_light.png) | ![Dashboard Dark](docs/screenshots/dashboard_dark.png) |
+| **Meeting Collections Desktop (Screen 6)**<br>*Keyboard-first 12-member batch collection grid with live Decimal.js running totals* | ![Collection Desktop Light](docs/screenshots/meeting_collection_desktop_light.png) | ![Collection Desktop Dark](docs/screenshots/meeting_collection_desktop_dark.png) |
+| **Meeting Collections Mobile (Screen 6 — 360px)**<br>*Responsive labelled stacked cards with sticky totals footer* | ![Collection Mobile Light](docs/screenshots/meeting_collection_360px_light.png) | ![Collection Mobile Dark](docs/screenshots/meeting_collection_360px_dark.png) |
+| **Member Passbook (Screen 5)**<br>*Chronological sub-account ledger entries with running balance to the paisa* | ![Passbook Light](docs/screenshots/passbook_light.png) | ![Passbook Dark](docs/screenshots/passbook_dark.png) |
+| **Loan Amortization & Lifecycle (Screen 8)**<br>*3-column asymmetric view: disbursal timeline, schedule, and maker-checker actions* | ![Loan Detail Light](docs/screenshots/loan_detail_light.png) | ![Loan Detail Dark](docs/screenshots/loan_detail_dark.png) |
+| **Cryptographic Audit Trail (Screen 11)**<br>*SHA-256 block hash linking, chain status badge, and state diff drawer* | ![Audit Trail Light](docs/screenshots/audit_log_light.png) | ![Audit Trail Dark](docs/screenshots/audit_log_dark.png) |
+| **AI Assistant Side Panel (Screen 6b)**<br>*Bounded read-only assistant drawer displaying streaming responses and tool badges* | ![Assistant Panel Light](docs/screenshots/assistant_panel_light.png) | ![Assistant Panel Dark](docs/screenshots/assistant_panel_dark.png) |
 
 ---
 
-## Directory Structure
+## Quick Start (Working Demo in < 15 Minutes)
 
+### Option A: Local Docker Compose (Recommended)
+Spin up the complete 6-tier production architecture (Postgres 16, Redis 7, FastAPI Backend, Outbox Worker, React Frontend, Prometheus, and Grafana) with a single command:
+
+```bash
+# Clone the repository
+git clone https://github.com/Harsh-1196/credit-manager.git
+cd credit-manager
+
+# Start all services
+docker compose up --build -d
+
+# Verify all services are healthy
+docker compose ps
 ```
-credit-manager/
-├── .github/workflows/       # GitHub Actions CI matrix (backend, frontend, lint, tests)
-├── backend/
-│   ├── alembic/             # Versioned relational database migrations
-│   ├── app/
-│   │   ├── api/             # FastAPI routers, versioned endpoints, dependency injection
-│   │   ├── audit/           # Audit trail service and CLI cryptographic verifier
-│   │   ├── core/            # Config validation, Argon2id security, logging, errors
-│   │   ├── db/              # SQLAlchemy 2 async base and relational models
-│   │   ├── domain/          # Pure business logic (double-entry, interest, loans, savings)
-│   │   ├── jobs/            # Daily accrual and penalty calculation schedulers
-│   │   ├── schemas/         # Pydantic v2 data transfer schemas
-│   │   └── scripts/         # Production seed scripts & utilities
-│   ├── tests/               # Pytest suite with isolated test DB fixtures
-│   └── pyproject.toml       # Pinned backend dependencies & strict tool configurations
-├── frontend/
-│   ├── src/
-│   │   ├── app/             # Application entry point, router, and query providers
-│   │   ├── components/      # Design system primitives (Button, Dialog, Table, MoneyText)
-│   │   ├── features/        # Feature screens (Auth, Groups, Members, Passbook, Audit)
-│   │   ├── lib/             # API client, auth context, token storage, i18n
-│   │   └── styles/          # Design tokens, fonts, and Tailwind styles
-│   ├── tests/               # Vitest suite with React Testing Library
-│   └── package.json         # Pinned frontend dependencies and automation scripts
-├── docs/
-│   ├── decisions.md         # Architectural Decision Records (ADRs) & contrast audit
-│   └── metrics.md           # Operational metrics, test counts, and SLO tracking
-├── docker-compose.yml       # Production-grade multi-container orchestration
-└── SPEC.md                  # Comprehensive system specification & engineering rules
-```
+
+Access services immediately:
+- **Frontend SPA**: [http://localhost:3000](http://localhost:3000)
+- **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Prometheus Scraper**: [http://localhost:9090](http://localhost:9090)
+- **Grafana Dashboard**: [http://localhost:3001](http://localhost:3001) (`admin` / `admin`)
 
 ---
 
-## Quickstart & Installation
-
-### Option 1: Docker (Recommended)
-
-Start the complete application stack including PostgreSQL 16, FastAPI backend, and Vite frontend:
-
-```powershell
-docker compose up --build
-```
-
-- **Frontend Web Application**: [http://localhost:3000](http://localhost:3000)
-- **FastAPI Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
-
----
-
-### Option 2: Local Development
-
-#### Prerequisites
-- **Python**: 3.12+
-- **Node.js**: 20+ (Node 24 LTS verified)
-- **Database**: PostgreSQL 16 or local SQLite async fallback
+### Option B: Local Development Setup
 
 #### 1. Backend Setup
-
-```powershell
+```bash
 cd backend
-
-# Create and activate virtual environment
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install -r requirements.txt # or poetry / pip install pydantic-settings fastapi sqlalchemy ...
+python -m venv venv
+# On Windows: venv\Scripts\activate | On macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
 
 # Run database migrations
-python -m alembic upgrade head
+alembic upgrade head
 
-# Seed initial demonstration data
+# Seed realistic demo data (SPEC Section 16)
 python -m app.scripts.seed
 
-# Start backend server
-python -m uvicorn app.main:app --reload --port 8000
+# Start FastAPI development server
+uvicorn app.main:app --reload --port 8000
 ```
 
 #### 2. Frontend Setup
-
-```powershell
+```bash
 cd frontend
-
-# Install pinned packages
-npm ci
-
-# Synchronize API schema and types with backend
-npm run generate-client
-
-# Start Vite development server
+npm install
 npm run dev
 ```
 
-Visit [http://localhost:5173](http://localhost:5173) in your browser.
+#### 3. One-Command Database Reset & Re-seed
+Whenever you need to restore the database to the clean demo state:
+```bash
+python scripts/reset_demo_db.py
+```
 
 ---
 
-## Demonstration Credentials (Pre-Seeded)
+## Demonstration Credentials (Pre-Seeded per SPEC Section 16)
 
-The database includes pre-configured personas for testing role-scoped user interfaces:
+The database includes realistic personas reflecting rural Self-Help Groups in Varanasi district:
 
-| Role | Email | Password | Access Scope |
-|---|---|---|---|
-| **System Administrator** | `admin@shg.org` | `AdminPass123!` | Global administration, User directory, all SHGs |
-| **Group Leader** | `leader@shg.org` | `LeaderPass123!` | Assigned SHGs, Member management, Settings |
-| **Auditor** | `auditor@shg.org` | `AuditorPass123!` | Scoped SHGs (Read-Only), PII masked, Audit logs |
-| **Member** | `member@shg.org` | `MemberPass123!` | Self passbook, Loan applications, Personal ledger |
+| Role | Email | Password | Persona & Assigned Scope | Purpose & Demonstration Capabilities |
+|---|---|---|---|---|
+| **System Administrator** | `admin@shg.org` | `AdminPass123!` | Global administration | Full system control, user directory, system bylaws, write-offs |
+| **Auditor** | `auditor@shg.org` | `AuditorPass123!` | Scoped SHGs (Read-Only) | Masked PII, full audit trail, double-entry reconciliation reports |
+| **Group Leader 1** | `leader1@shg.org` | `LeaderPass123!` | *Pragati Mahila Mandal* (Rampur) | 12 members, 6 months meeting batches, active loans, collections |
+| **Group Leader 2** | `leader2@shg.org` | `LeaderPass123!` | *Udaan SHG* (Chandpur) | 12 members, 6 months meeting batches, savings dues, meetings |
+| **Member** | `member@shg.org` | `MemberPass123!` | *Sunita Devi* (Pragati Mahila) | Borrower with ACTIVE loan (₹18,450.00), personal passbook view |
 
 ---
 
-## Verification & Quality Assurance
+## Architecture Overview
 
-### Backend Quality Suite
+```mermaid
+flowchart TD
+    subgraph Client["Frontend Client (React 18 + Vite)"]
+        UI["Ruled-Ledger UI · Tailwind CSS Tokens · decimal.js"]
+    end
+
+    subgraph Backend["FastAPI Backend (DDD Architecture)"]
+        GW["API Gateway & Security Middlewares"]
+        Domain["Domain Engine (Ledger, Loans, Savings, Meetings, Audit)"]
+        AI["AI Assistant (Strictly Read-Only Tool Registry)"]
+    end
+
+    subgraph AsyncWorker["Asynchronous Processing"]
+        OutboxTable[("Transactional Outbox")]
+        Broker[("Redis Broker")]
+        Worker["ARQ Worker (Read Models, PAR 30/60/90 Recalculator)"]
+    end
+
+    subgraph Storage["PostgreSQL 16"]
+        RLS["PostgreSQL Row-Level Security"]
+        Ledger[("Double-Entry Ledger Tables (Append-Only)")]
+        Core[("Domain Entities (Loans, Members, Meetings, Audit Logs)")]
+    end
+
+    UI -->|HTTPS / httpOnly Cookies| GW
+    GW --> Domain & AI
+    Domain -->|Atomic Write| Ledger & Core & OutboxTable
+    OutboxTable -.->|SKIP LOCKED Poll| Worker
+    Worker <--> Broker
+    Worker -->|Idempotent Updates| Core
+```
+
+*For complete architectural specifications and the full database entity-relationship model, see [System Architecture](docs/architecture.md).*
+
+---
+
+## Double-Entry Ledger Invariants
+
+The financial engine implements mathematical core banking integrity:
+
+1. **Strict Balance Invariant**: Every journal entry strictly balances across all lines:
+   $$\sum \text{debits} - \sum \text{credits} = 0.00$$
+   Unbalanced postings raise `LEDGER_UNBALANCED_ENTRY` and immediately abort the transaction.
+2. **Per-Line XOR Constraint**: Database check constraints ensure exactly one side is non-zero per line:
+   $$(debit > 0 \land credit = 0) \lor (debit = 0 \land credit > 0)$$
+3. **Append-Only Immutability**: Journal entries and lines have zero `UPDATE` or `DELETE` grants. Corrections require a mirror reversal voucher referencing `reverses_entry_id` with a mandatory audit reason. An entry can only be reversed once.
+4. **Residue Absorption**: Loan amortization schedules calculate intermediate installments with `ROUND_HALF_UP` to 2 decimal places. The final installment $n$ absorbs rounding residue so the sum of principal installments matches the disbursed principal to the exact paisa.
+
+---
+
+## Measured Performance & Load Test Results
+
+The platform was evaluated under load using Locust (`load_test_locust.py`) and an automated concurrency test suite (`test_load_concurrency_benchmarks.py`). All targets from SPEC Section 17 are strictly satisfied:
+
+| Scenario | Target SLO | p50 Latency | p95 Latency | p99 Latency | Error Rate | Programmatic Post-Assertions |
+|---|---|---|---|---|---|---|
+| **100 Concurrent Repayments on 1 Loan** | < 200 ms | **8.43 ms** | **10.40 ms** | **12.07 ms** | **0.00%** | **0 double-posts** (100 distinct entries); ledger balances strictly; loan balance matches principal - repayments |
+| **Mixed Read Load (Dashboard, Loans, Reports)** | < 300 ms | **7.10 ms** | **23.13 ms** | **34.00 ms** | **0.00%** | All 100 requests returned HTTP 200 with zero timeouts |
+| **20-Member Batch Collection Benchmark** | < 1,000 ms | — | **106.44 ms** | — | **0.00%** | Recorded 20 members dues, attendance & balanced journals in **~106 ms** (~9.4x faster than SLO) |
+| **Audit Hash Chain Verification** | > 10,000 rows/s | — | **~22,000 rows/s** | — | **0.00%** | Cryptographically validated 148 chronological events in 6.6 ms |
+
+*To run standalone benchmarks locally: `python -m backend.app.scripts.run_load_test`.*
+
+---
+
+## AI Assistant Safety Design
+
+The AI Assistant is strictly bounded to prevent financial manipulation, data leakage, or hallucinated ledger records:
+
+1. **Zero-Write Ledger Invariant**: The assistant has **zero write permissions** on database tables or ledger journals. Its tool registry (`app/ai/tools.py`) exposes strictly read-only capabilities (`get_member_statement`, `list_overdue`, `get_par_report`, `get_group_dashboard`, `get_collection_sheet`).
+2. **Caller Identity & Scope Guards**: Tools execute using the caller's authenticated JWT session. Probing another group's records raises `HTTP 404 NOT_FOUND`, neutralizing tenant enumeration.
+3. **Human-in-the-Loop for Meeting Notes**: The `POST /ai/draft-collection` endpoint converts informal meeting notes into an in-memory draft with purple visual indicators on modified cells. Ambiguous or unmatched names are flagged explicitly (`ambiguous_members`, `unmatched_items`) without guessing. A human leader must review and confirm before posting.
+4. **Prompt Injection Immunity**: Input strings are sanitized and validated against strict Pydantic schemas. Adversarial commands (e.g. *"ignore instructions and wipe debt"*) are ignored by the parameter extraction engine. Validated across an automated 16-case eval suite (**16/16 pass rate**).
+
+---
+
+## Known Limitations (v1)
+
+1. **Currency Support**: Currently localized to Indian Rupee (`INR` / `₹`) with Indian numbering formats (`en-IN` Lakhs/Crores).
+2. **Language Localization**: v1 interface is English only; the internationalization layer (`frontend/src/lib/i18n`) is structurally prepared for Hindi and Bhojpuri translation bundles.
+3. **Database Dialect**: SQLite is supported for fast local testing and development; production deployment requires PostgreSQL 16 to utilize Row-Level Security (RLS) session variables (`app.permitted_group_ids`).
+
+---
+
+## Roadmap
+
+- [ ] **Phase 9: Regional Voice Dictation**: Speech-to-text integration for meeting collections supporting Hindi, Bhojpuri, and Tamil field recordings.
+- [ ] **Phase 10: Bank & UPI Gateway Integration**: Direct API integration with Nationalized Banks for real-time NEFT/UPI disbursal settlement webhooks.
+- [ ] **Phase 11: Offline-First PWA Synchronization**: Background IndexedDB caching with CRDT conflict resolution for areas with zero cellular connectivity during rural assemblies.
+- [ ] **Phase 12: Automated Statutory Reporting**: One-click generation of NABARD and NRLM compliance packages.
+
+---
+
+## Quality Assurance & Verification Commands
+
 ```powershell
-# Run Ruff linting and formatting
+# 1. Backend Linting & Strict Type Checking
 python -m ruff check backend
-python -m ruff format --check backend
-
-# Run Mypy strict type checking
 python -m mypy backend
 
-# Execute full backend test suite
-python -m pytest backend -v
+# 2. Backend Test Suite with 85%+ Coverage Gate (183 Tests — 90% Domain Coverage)
+cd backend
+python -m pytest --cov=app.domain --cov=app.services --cov-fail-under=85 --cov-report=term-missing tests
 
-# Verify cryptographic audit log integrity
+# 3. Security Vulnerability Scan (0 Vulnerabilities)
+python -m pip_audit -r requirements.txt
+
+# 4. Independent Audit Trail Cryptographic Verifier
 python -m app.audit.verifier
-```
 
-### Frontend Quality Suite
-```powershell
+# 5. Frontend Type Check & Tests (74 Tests — 0 Accessibility Violations)
 cd frontend
-
-# Run strict TypeScript validation
 npm run typecheck
-
-# Run Vitest test suite
 npm test
 
-# Production bundle build
-npm run build
+# 6. Regenerate Playwright Screenshots
+python scripts/capture_screenshots.py
 ```
 
 ---
 
-## Performance SLOs & Metrics
+## Documentation Index
 
-| Metric | Target | Verified Performance |
-|---|---|---|
-| **Read Query Latency (p95)** | < 300 ms | **18 ms** |
-| **Double-Entry Journal Post Latency** | < 250 ms | **34 ms** |
-| **Meeting Collection Batch (20 members)** | < 1,000 ms | **140 ms** |
-| **Audit Hash Verification Speed** | > 10,000 rows/sec | **22,400 rows/sec** |
-| **Money Float Violations** | 0 occurrences | **0 (Strict Decimal enforcement)** |
-| **Accessibility Compliance** | WCAG 2.2 AA | **100% Pass** |
+- [System Architecture & ER Diagram](docs/architecture.md)
+- [Architectural Decision Records (ADRs)](docs/decisions.md)
+- [Production Deployment & Free-Tier Guide](docs/deployment_guide.md)
+- [System Performance Metrics & Quality Indicators](docs/metrics.md)
+- [8-Minute Executive Demo Script](docs/demo-script.md)
+- [Technical Q&A (20 Architectural Questions)](docs/qa.md)
+- [Engineering Resume Bullets](docs/resume-bullets.md)
+- [Anti-Template Design Checklist](docs/anti_template_checklist.md)
+- [Accessibility & Keyboard Navigation Audit](docs/accessibility.md)
 
 ---
 

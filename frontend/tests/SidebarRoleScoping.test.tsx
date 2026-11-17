@@ -41,6 +41,7 @@ describe('Sidebar Role Scoping', () => {
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('User Directory')).toBeInTheDocument();
     expect(screen.getByText('Audit Trail')).toBeInTheDocument();
+    expect(screen.getByText('Reconciliation')).toBeInTheDocument();
   });
 
   it('GROUP_LEADER sees Groups and Members, but NOT User Directory or Audit Trail', () => {
@@ -55,6 +56,7 @@ describe('Sidebar Role Scoping', () => {
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.queryByText('User Directory')).not.toBeInTheDocument();
     expect(screen.queryByText('Audit Trail')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reconciliation')).not.toBeInTheDocument();
   });
 
   it('AUDITOR sees Groups, Members, and Audit Trail, but NOT User Directory', () => {
@@ -69,6 +71,7 @@ describe('Sidebar Role Scoping', () => {
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('Audit Trail')).toBeInTheDocument();
     expect(screen.queryByText('User Directory')).not.toBeInTheDocument();
+    expect(screen.queryByText('Reconciliation')).not.toBeInTheDocument();
   });
 
   it('MEMBER sees My Group, but NOT Member Directory, User Directory, or Audit Trail', () => {

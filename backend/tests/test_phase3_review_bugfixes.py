@@ -56,8 +56,8 @@ async def test_full_loan_payoff_allocation_balanced(db_session: AsyncSession, fu
     await db_session.refresh(disbursed)
 
     # 2. Total payoff = ₹2,000 principal + ₹40 interest = ₹2,040.00
-    total_principal = sum(s.principal_due for s in disbursed.schedule)
-    total_interest = sum(s.interest_due for s in disbursed.schedule)
+    total_principal = sum((s.principal_due for s in disbursed.schedule), Decimal("0.00"))
+    total_interest = sum((s.interest_due for s in disbursed.schedule), Decimal("0.00"))
     payoff_amount = total_principal + total_interest
 
     # 3. Direct domain allocation check on copies to avoid in-memory mutation
@@ -494,6 +494,7 @@ async def test_repayment_records_audit_log_row(
     audit_res = await db_session.execute(audit_stmt)
     audit_entry = audit_res.scalar_one_or_none()
     assert audit_entry is not None
+    assert audit_entry.after is not None
     assert audit_entry.after["payment_amount"] == "500.00"
 
 

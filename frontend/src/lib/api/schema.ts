@@ -130,6 +130,298 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ai/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Interactive AI Assistant with Read-Only Financial Tools
+         * @description AI Assistant chat endpoint.
+         *     If 'text/event-stream' is requested (default for chat UI), streams SSE events:
+         *     - tool_start: tool execution initiated
+         *     - tool_result: structured tool response summary
+         *     - content_delta: streamed assistant text tokens
+         *     - done: final completion with complete tool calls list
+         *     If 'application/json' is explicitly accepted, returns complete ChatResponse JSON.
+         */
+        post: operations["ai_chat_api_v1_ai_chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ai/draft-collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Extract Draft Meeting Collections from Notes
+         * @description Takes unstructured or dictated meeting notes, maps per-member amounts,
+         *     flags unmatched and ambiguous names, and returns a verified draft collection payload.
+         *     It is strictly a draft; no data is posted to the database or double-entry ledger.
+         */
+        post: operations["ai_draft_collection_api_v1_ai_draft_collection_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Dashboard */
+        get: operations["get_dashboard_api_v1_dashboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/group-dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Group Dashboard Report */
+        get: operations["get_group_dashboard_report_api_v1_reports_group_dashboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/member-statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Member Statement Report */
+        get: operations["get_member_statement_report_api_v1_reports_member_statement_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/group-ledger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Group Ledger Report */
+        get: operations["get_group_ledger_report_api_v1_reports_group_ledger_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/loan-portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Loan Portfolio Report */
+        get: operations["get_loan_portfolio_report_api_v1_reports_loan_portfolio_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/collection-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Collection Sheet Report */
+        get: operations["get_collection_sheet_report_api_v1_reports_collection_sheet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Audit Logs
+         * @description Filterable audit trail log entries. Restricted to ADMIN and AUDITOR roles.
+         */
+        get: operations["list_audit_logs_api_v1_audit_logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Audit Trail
+         * @description Verifies the cryptographic SHA-256 hash chain across all audit logs.
+         *     Restricted to ADMIN and AUDITOR roles.
+         */
+        post: operations["verify_audit_trail_api_v1_audit_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Audit Logs Csv
+         * @description Exports filtered audit trail records to a CSV file. Restricted to ADMIN and AUDITOR.
+         */
+        get: operations["export_audit_logs_csv_api_v1_audit_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reconciliation/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Trigger Reconciliation
+         * @description Trigger a complete financial reconciliation run across all groups. Restricted to ADMIN.
+         */
+        post: operations["trigger_reconciliation_api_v1_reconciliation_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reconciliation/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Latest Reconciliation
+         * @description Retrieve the most recent financial reconciliation run result. Restricted to ADMIN.
+         */
+        get: operations["get_latest_reconciliation_api_v1_reconciliation_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reconciliation/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reconciliation Runs
+         * @description List historical reconciliation execution runs. Restricted to ADMIN.
+         */
+        get: operations["list_reconciliation_runs_api_v1_reconciliation_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/system/worker-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Worker Status
+         * @description Returns worker health status, queue backlog counts, and processing lag in seconds.
+         *     Used by frontend status indicators to monitor background processing lag.
+         */
+        get: operations["get_worker_status_api_v1_system_worker_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users": {
         parameters: {
             query?: never;
@@ -522,6 +814,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/meetings/{id}/collection-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Collection Sheet
+         * @description SPEC Phase 4 & 11: Returns the full meeting collection sheet with per-member
+         *     savings dues, EMI dues, arrears, fines, and grand totals.
+         */
+        get: operations["get_collection_sheet_api_v1_meetings__id__collection_sheet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/collection-sheet/{meeting_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Reports Collection Sheet
+         * @description SPEC Section 8 & 11 reports route alias for collection sheet.
+         */
+        get: operations["get_reports_collection_sheet_api_v1_reports_collection_sheet__meeting_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meetings/{id}/collections": {
         parameters: {
             query?: never;
@@ -533,10 +866,32 @@ export interface paths {
         put?: never;
         /**
          * Batch Meeting Collections
-         * @description SPEC 4.3 & 8: Batch endpoint to record savings and fines for many members at once.
-         *     Posts a single balanced, atomic journal entry and updates member savings dues idempotently.
+         * @description SPEC 4.3, 8 & Phase 4: Batch endpoint to record savings, EMIs and fines for many members atomically and idempotently.
+         *     - One journal entry per member per collection, each balanced.
+         *     - All-or-nothing failure rule.
+         *     - Row-level locking on active loans.
          */
         post: operations["batch_meeting_collections_api_v1_meetings__id__collections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/members/{id}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Member Attendance
+         * @description Returns a member's attendance register across all SHG meetings.
+         */
+        get: operations["get_member_attendance_api_v1_members__id__attendance_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -800,6 +1155,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/loans/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Loan Schedule
+         * @description SPEC 8 standalone endpoint for retrieving repayment schedule.
+         */
+        get: operations["get_loan_schedule_api_v1_loans__id__schedule_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/loans/{id}/write-off": {
         parameters: {
             query?: never;
@@ -865,6 +1240,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgingBucketItem */
+        AgingBucketItem: {
+            /** Bucket */
+            bucket: string;
+            /** Count */
+            count: number;
+            /** Amount */
+            amount: string;
+        };
         /** AttendanceRecord */
         AttendanceRecord: {
             /**
@@ -885,12 +1269,208 @@ export interface components {
             /** Attendance */
             attendance: components["schemas"]["AttendanceRecord"][];
         };
+        /** AuditLogListResponse */
+        AuditLogListResponse: {
+            /** Items */
+            items: components["schemas"]["AuditLogRowResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** AuditLogRowResponse */
+        AuditLogRowResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Actor Id */
+            actor_id?: string | null;
+            /** Actor Role */
+            actor_role?: string | null;
+            /** Action */
+            action: string;
+            /** Entity Type */
+            entity_type: string;
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Before */
+            before?: {
+                [key: string]: unknown;
+            } | null;
+            /** After */
+            after?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ip */
+            ip?: string | null;
+            /** User Agent */
+            user_agent?: string | null;
+            /** Request Id */
+            request_id?: string | null;
+            /** Prev Hash */
+            prev_hash?: string | null;
+            /** Row Hash */
+            row_hash: string;
+        };
+        /** AuditVerificationResponse */
+        AuditVerificationResponse: {
+            /** Valid */
+            valid: boolean;
+            /** Count */
+            count: number;
+            /** Broken At Index */
+            broken_at_index?: number | null;
+            /** Broken At Id */
+            broken_at_id?: string | null;
+            /** Error */
+            error?: string | null;
+            /** Message */
+            message: string;
+        };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
             /** Current Password */
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** ChatMessage */
+        ChatMessage: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant" | "system";
+            /** Content */
+            content: string;
+        };
+        /** ChatRequest */
+        ChatRequest: {
+            /** Messages */
+            messages: components["schemas"]["ChatMessage"][];
+            /** Shg Id */
+            shg_id?: string | null;
+        };
+        /** CollectionDueItem */
+        CollectionDueItem: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name: string;
+            /** Savings Due */
+            savings_due: string;
+            /** Emi Due */
+            emi_due: string;
+            /** Arrears */
+            arrears: string;
+            /** Fines */
+            fines: string;
+            /** Total Due */
+            total_due: string;
+        };
+        /** CollectionSheetMemberRow */
+        CollectionSheetMemberRow: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name: string;
+            /** @default PRESENT */
+            attendance_status: components["schemas"]["AttendanceStatus"];
+            /** Savings Due */
+            savings_due: string;
+            /** Emi Due */
+            emi_due: string;
+            /** Principal Due */
+            principal_due: string;
+            /** Interest Due */
+            interest_due: string;
+            /** Arrears */
+            arrears: string;
+            /** Penalty Due */
+            penalty_due: string;
+            /** Fines Due */
+            fines_due: string;
+            /** Total Due */
+            total_due: string;
+            /** Active Loan Id */
+            active_loan_id?: string | null;
+            /** Active Loan Number */
+            active_loan_number?: string | null;
+        };
+        /** CollectionSheetResponse */
+        CollectionSheetResponse: {
+            /**
+             * Meeting Id
+             * Format: uuid
+             */
+            meeting_id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Shg Name */
+            shg_name: string;
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            status: components["schemas"]["MeetingStatus"];
+            /** Period */
+            period: string;
+            /** Members */
+            members: components["schemas"]["CollectionSheetMemberRow"][];
+            totals: components["schemas"]["CollectionSheetTotals"];
+        };
+        /** CollectionSheetTotals */
+        CollectionSheetTotals: {
+            /** Total Savings Due */
+            total_savings_due: string;
+            /** Total Emi Due */
+            total_emi_due: string;
+            /** Total Arrears */
+            total_arrears: string;
+            /** Total Fines Due */
+            total_fines_due: string;
+            /** Total Due */
+            total_due: string;
+            /** Member Count */
+            member_count: number;
+        };
+        /** DashboardResponse */
+        DashboardResponse: {
+            /** Role */
+            role: string;
+            group_dashboard?: components["schemas"]["GroupDashboardReportResponse"] | null;
+            member_dashboard?: components["schemas"]["MemberStatementReportResponse"] | null;
+        };
+        /** DisbursalVsRepaymentItem */
+        DisbursalVsRepaymentItem: {
+            /** Month */
+            month: string;
+            /** Disbursed */
+            disbursed: string;
+            /** Repaid */
+            repaid: string;
         };
         /** DisburseJournalLine */
         DisburseJournalLine: {
@@ -902,6 +1482,92 @@ export interface components {
             debit: string;
             /** Credit */
             credit: string;
+        };
+        /** DraftCollectionRequest */
+        DraftCollectionRequest: {
+            /**
+             * Meeting Id
+             * Format: uuid
+             */
+            meeting_id: string;
+            /** Notes */
+            notes: string;
+        };
+        /** DraftCollectionResponse */
+        DraftCollectionResponse: {
+            /**
+             * Meeting Id
+             * Format: uuid
+             */
+            meeting_id: string;
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Shg Name */
+            shg_name: string;
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            /** Items */
+            items: components["schemas"]["DraftMemberAmount"][];
+            /** Unmatched Items */
+            unmatched_items?: components["schemas"]["UnmatchedNoteItem"][];
+            /** Ambiguous Members */
+            ambiguous_members?: string[];
+            /** Total Collected Draft */
+            total_collected_draft: string;
+            /**
+             * Disclaimer
+             * @default This is an uncommitted AI draft generated from notes. Review all rows and click 'Confirm & Post' to commit.
+             */
+            disclaimer: string;
+        };
+        /** DraftMemberAmount */
+        DraftMemberAmount: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name: string;
+            /**
+             * Attendance
+             * @default PRESENT
+             * @enum {string}
+             */
+            attendance: "PRESENT" | "ABSENT" | "EXCUSED";
+            /**
+             * Savings Amount
+             * @default 0.00
+             */
+            savings_amount: string;
+            /**
+             * Loan Repayment Amount
+             * @default 0.00
+             */
+            loan_repayment_amount: string;
+            /**
+             * Fine Amount
+             * @default 0.00
+             */
+            fine_amount: string;
+            /**
+             * Total Amount
+             * @default 0.00
+             */
+            total_amount: string;
+            /**
+             * Confidence
+             * @default 1
+             */
+            confidence: number;
+            /** Notes */
+            notes?: string | null;
         };
         /** EligibilityCheckItemResponse */
         EligibilityCheckItemResponse: {
@@ -930,6 +1596,49 @@ export interface components {
             summary_message: string;
             /** Checks */
             checks: components["schemas"]["EligibilityCheckItemResponse"][];
+        };
+        /** GroupDashboardFigures */
+        GroupDashboardFigures: {
+            /** Total Corpus */
+            total_corpus: string;
+            /** Total Savings */
+            total_savings: string;
+            /** Outstanding Principal */
+            outstanding_principal: string;
+            /** Interest Earned */
+            interest_earned: string;
+            /** Repayment Rate */
+            repayment_rate: string;
+            /** Overdue Amount */
+            overdue_amount: string;
+            /** Next Meeting Date */
+            next_meeting_date: string | null;
+            /** Collections Due Next Meeting */
+            collections_due_next_meeting: string;
+        };
+        /** GroupDashboardReportResponse */
+        GroupDashboardReportResponse: {
+            /**
+             * Shg Id
+             * Format: uuid
+             */
+            shg_id: string;
+            /** Shg Name */
+            shg_name: string;
+            /**
+             * As Of Date
+             * Format: date
+             */
+            as_of_date: string;
+            figures: components["schemas"]["GroupDashboardFigures"];
+            /** Savings Trend */
+            savings_trend: components["schemas"]["SavingsTrendItem"][];
+            /** Disbursals Vs Repayments */
+            disbursals_vs_repayments: components["schemas"]["DisbursalVsRepaymentItem"][];
+            /** Aging Buckets */
+            aging_buckets: components["schemas"]["AgingBucketItem"][];
+            /** Collections Due */
+            collections_due: components["schemas"]["CollectionDueItem"][];
         };
         /** GroupSettingsResponse */
         GroupSettingsResponse: {
@@ -1572,11 +2281,18 @@ export interface components {
              * Format: uuid
              */
             member_id: string;
+            /** @default PRESENT */
+            attendance_status: components["schemas"]["AttendanceStatus"];
             /**
              * Savings Amount
              * @default 0.00
              */
             savings_amount: number | string;
+            /**
+             * Loan Repayment Amount
+             * @default 0.00
+             */
+            loan_repayment_amount: number | string;
             /**
              * Fine Amount
              * @default 0.00
@@ -1586,7 +2302,7 @@ export interface components {
         /** MeetingBatchCollectionsRequest */
         MeetingBatchCollectionsRequest: {
             /** Period */
-            period: string;
+            period?: string | null;
             /** Collections */
             collections: components["schemas"]["MeetingBatchCollectionItem"][];
             /** Idempotency Key */
@@ -1596,13 +2312,19 @@ export interface components {
         MeetingBatchCollectionsResponse: {
             /** Total Collected */
             total_collected: string;
+            /** Total Savings */
+            total_savings: string;
+            /** Total Loan Repayment */
+            total_loan_repayment: string;
+            /** Total Fines */
+            total_fines: string;
             /** Members Count */
             members_count: number;
-            /**
-             * Journal Entry Id
-             * Format: uuid
-             */
-            journal_entry_id: string;
+            /** Journal Entries Count */
+            journal_entries_count: number;
+            /** Journal Entry Ids */
+            journal_entry_ids: string[];
+            meeting_status: components["schemas"]["MeetingStatus"];
         };
         /** MeetingCreateRequest */
         MeetingCreateRequest: {
@@ -1691,6 +2413,50 @@ export interface components {
             agenda?: string | null;
             /** Minutes */
             minutes?: string | null;
+        };
+        /** MemberAttendanceRecord */
+        MemberAttendanceRecord: {
+            /**
+             * Meeting Id
+             * Format: uuid
+             */
+            meeting_id: string;
+            /**
+             * Meeting Date
+             * Format: date
+             */
+            meeting_date: string;
+            /** Agenda */
+            agenda?: string | null;
+            status: components["schemas"]["AttendanceStatus"];
+            /** Recorded At */
+            recorded_at?: string | null;
+        };
+        /** MemberAttendanceResponse */
+        MemberAttendanceResponse: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Member Name */
+            member_name: string;
+            summary: components["schemas"]["MemberAttendanceSummary"];
+            /** Records */
+            records: components["schemas"]["MemberAttendanceRecord"][];
+        };
+        /** MemberAttendanceSummary */
+        MemberAttendanceSummary: {
+            /** Total Meetings */
+            total_meetings: number;
+            /** Present Count */
+            present_count: number;
+            /** Absent Count */
+            absent_count: number;
+            /** Excused Count */
+            excused_count: number;
+            /** Attendance Rate */
+            attendance_rate: string;
         };
         /** MemberCreateRequest */
         MemberCreateRequest: {
@@ -1797,6 +2563,51 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** MemberStatementReportResponse */
+        MemberStatementReportResponse: {
+            member: components["schemas"]["MemberStatementSummary"];
+            /** Passbook Entries */
+            passbook_entries: {
+                [key: string]: unknown;
+            }[];
+            /** Active Loans */
+            active_loans: {
+                [key: string]: unknown;
+            }[];
+            /** Attendance Summary */
+            attendance_summary: {
+                [key: string]: unknown;
+            };
+        };
+        /** MemberStatementSummary */
+        MemberStatementSummary: {
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            /** Name */
+            name: string;
+            /** Phone */
+            phone: string | null;
+            /** Shg Name */
+            shg_name: string;
+            /** Status */
+            status: string;
+            /**
+             * Join Date
+             * Format: date
+             */
+            join_date: string;
+            /** Total Savings Balance */
+            total_savings_balance: string;
+            /** Total Loans Taken */
+            total_loans_taken: number;
+            /** Current Outstanding Principal */
+            current_outstanding_principal: string;
+            /** Attendance Rate */
+            attendance_rate: string;
         };
         /**
          * MemberStatus
@@ -1967,6 +2778,35 @@ export interface components {
             /** Par 90 Ratio */
             par_90_ratio: string;
         };
+        /** ReconciliationRunResponse */
+        ReconciliationRunResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Run At
+             * Format: date-time
+             */
+            run_at: string;
+            /** Triggered By */
+            triggered_by?: string | null;
+            /** Status */
+            status: string;
+            /** Groups Checked Count */
+            groups_checked_count: number;
+            /** Discrepancies Count */
+            discrepancies_count: number;
+            /** Discrepancies */
+            discrepancies: {
+                [key: string]: unknown;
+            }[];
+            /** Execution Time Ms */
+            execution_time_ms: number;
+            /** Notes */
+            notes?: string | null;
+        };
         /** RefreshRequest */
         RefreshRequest: {
             /** Refresh Token */
@@ -2102,6 +2942,8 @@ export interface components {
             fine_amount: number | string;
             /** Entry Date */
             entry_date?: string | null;
+            /** Collected Date */
+            collected_date?: string | null;
             /** Idempotency Key */
             idempotency_key?: string | null;
         };
@@ -2153,6 +2995,13 @@ export interface components {
          * @enum {string}
          */
         SavingsDueStatus: "PENDING" | "PARTIAL" | "PAID" | "OVERDUE";
+        /** SavingsTrendItem */
+        SavingsTrendItem: {
+            /** Month */
+            month: string;
+            /** Amount */
+            amount: string;
+        };
         /** SavingsWithdrawRequest */
         SavingsWithdrawRequest: {
             /**
@@ -2215,6 +3064,20 @@ export interface components {
             total_credit: string;
             /** Net Balance */
             net_balance: string;
+        };
+        /** UnmatchedNoteItem */
+        UnmatchedNoteItem: {
+            /** Raw Text */
+            raw_text: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "UNMATCHED_MEMBER" | "AMBIGUOUS_MATCH" | "UNPARSED_AMOUNT";
+            /** Candidate Names */
+            candidate_names?: string[];
+            /** Detected Amount */
+            detected_amount?: string | null;
         };
         /** UserCreateRequest */
         UserCreateRequest: {
@@ -2328,6 +3191,23 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WorkerStatusResponse */
+        WorkerStatusResponse: {
+            /** Worker Status */
+            worker_status: string;
+            /** Pending Events Count */
+            pending_events_count: number;
+            /** Processing Events Count */
+            processing_events_count: number;
+            /** Failed Events Count */
+            failed_events_count: number;
+            /** Dead Letter Count */
+            dead_letter_count: number;
+            /** Lag Seconds */
+            lag_seconds: number;
+            /** Last Event Processed At */
+            last_event_processed_at?: string | null;
         };
     };
     responses: never;
@@ -2530,6 +3410,480 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ai_chat_api_v1_ai_chat_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                accept?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ai_draft_collection_api_v1_ai_draft_collection_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftCollectionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftCollectionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dashboard_api_v1_dashboard_get: {
+        parameters: {
+            query?: {
+                /** @description Target SHG UUID for leaders/admins */
+                shg_id?: string | null;
+                /** @description As of date for dashboard metrics */
+                as_of_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_group_dashboard_report_api_v1_reports_group_dashboard_get: {
+        parameters: {
+            query: {
+                /** @description Target Self-Help Group UUID */
+                shg_id: string;
+                /** @description Report calculation date */
+                as_of_date?: string | null;
+                /** @description Output format */
+                format?: "json" | "csv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_member_statement_report_api_v1_reports_member_statement_get: {
+        parameters: {
+            query: {
+                /** @description Target Member UUID */
+                member_id: string;
+                /** @description Start date */
+                from_date?: string | null;
+                /** @description End date */
+                to_date?: string | null;
+                /** @description Output format */
+                format?: "json" | "csv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_group_ledger_report_api_v1_reports_group_ledger_get: {
+        parameters: {
+            query: {
+                /** @description Target Self-Help Group UUID */
+                shg_id: string;
+                /** @description Start date */
+                from_date?: string | null;
+                /** @description End date */
+                to_date?: string | null;
+                /** @description Filter by account code prefix */
+                account_code?: string | null;
+                /** @description Output format */
+                format?: "json" | "csv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_loan_portfolio_report_api_v1_reports_loan_portfolio_get: {
+        parameters: {
+            query?: {
+                /** @description Target Self-Help Group UUID */
+                shg_id?: string | null;
+                /** @description Report date */
+                as_of_date?: string | null;
+                /** @description Output format */
+                format?: "json" | "csv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_collection_sheet_report_api_v1_reports_collection_sheet_get: {
+        parameters: {
+            query: {
+                /** @description Target Meeting UUID */
+                meeting_id: string;
+                /** @description Output format */
+                format?: "json" | "csv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_audit_logs_api_v1_audit_logs_get: {
+        parameters: {
+            query?: {
+                actor_id?: string | null;
+                entity_type?: string | null;
+                action?: string | null;
+                from_date?: string | null;
+                to_date?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditLogListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_audit_trail_api_v1_audit_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditVerificationResponse"];
+                };
+            };
+        };
+    };
+    export_audit_logs_csv_api_v1_audit_export_get: {
+        parameters: {
+            query?: {
+                actor_id?: string | null;
+                entity_type?: string | null;
+                action?: string | null;
+                from_date?: string | null;
+                to_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trigger_reconciliation_api_v1_reconciliation_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconciliationRunResponse"];
+                };
+            };
+        };
+    };
+    get_latest_reconciliation_api_v1_reconciliation_latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconciliationRunResponse"] | null;
+                };
+            };
+        };
+    };
+    list_reconciliation_runs_api_v1_reconciliation_runs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconciliationRunResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_worker_status_api_v1_system_worker_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkerStatusResponse"];
                 };
             };
         };
@@ -3509,6 +4863,68 @@ export interface operations {
             };
         };
     };
+    get_collection_sheet_api_v1_meetings__id__collection_sheet_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionSheetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reports_collection_sheet_api_v1_reports_collection_sheet__meeting_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionSheetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     batch_meeting_collections_api_v1_meetings__id__collections_post: {
         parameters: {
             query?: never;
@@ -3533,6 +4949,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeetingBatchCollectionsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_member_attendance_api_v1_members__id__attendance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberAttendanceResponse"];
                 };
             };
             /** @description Validation Error */
@@ -3963,6 +5410,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LoanDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_loan_schedule_api_v1_loans__id__schedule_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoanScheduleItemResponse"][];
                 };
             };
             /** @description Validation Error */

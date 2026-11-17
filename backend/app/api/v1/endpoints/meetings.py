@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request, Response, status
@@ -10,25 +9,25 @@ from sqlalchemy.orm import selectinload
 from app.api.deps import check_user_has_group_access, get_current_user, require_group_access
 from app.audit.service import record_audit_log
 from app.core.errors import AppError
-from app.core.idempotency import check_idempotency, compute_request_hash, save_idempotency_record
-from app.core.money import money_to_str, quantize_money
 from app.db.models.auth import User, UserRole
-from app.db.models.ledger import JournalSourceType
 from app.db.models.meetings import Attendance, Meeting, MeetingStatus
-from app.db.models.savings import SavingsDue, SavingsDueStatus
-from app.db.models.shg import Member
 from app.db.session import get_db
-from app.domain.ledger.accounts import get_account_by_code, get_or_create_member_sub_accounts
-from app.domain.ledger.posting import PostingLineDTO, post_journal_entry
 from app.schemas.meetings import (
     AttendanceRecord,
     AttendanceUpdateRequest,
+    CollectionSheetResponse,
     MeetingBatchCollectionsRequest,
     MeetingBatchCollectionsResponse,
     MeetingCreateRequest,
     MeetingDetailResponse,
     MeetingResponse,
     MeetingUpdateRequest,
+    MemberAttendanceResponse,
+)
+from app.services.meetings import (
+    get_meeting_collection_sheet,
+    get_member_attendance_history,
+    record_meeting_batch_collections,
 )
 
 router = APIRouter(tags=["meetings"])
@@ -268,6 +267,42 @@ async def update_meeting_attendance(
     return await get_meeting_detail(id=meeting.id, current_user=current_user, db=db)
 
 
+@router.get("/meetings/{id}/collection-sheet", response_model=CollectionSheetResponse)
+async def get_collection_sheet(
+    id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> CollectionSheetResponse:
+    """
+    SPEC Phase 4 & 11: Returns the full meeting collection sheet with per-member
+    savings dues, EMI dues, arrears, fines, and grand totals.
+    """
+    stmt = select(Meeting).where(Meeting.id == id)
+    res = await db.execute(stmt)
+    meeting = res.scalar_one_or_none()
+
+    if not meeting:
+        raise AppError(code="NOT_FOUND", message="Meeting not found.", status_code=status.HTTP_404_NOT_FOUND)
+
+    has_access = await check_user_has_group_access(current_user, meeting.shg_id, db)
+    if not has_access:
+        raise AppError(code="NOT_FOUND", message="Meeting not found.", status_code=status.HTTP_404_NOT_FOUND)
+
+    return await get_meeting_collection_sheet(db=db, meeting_id=id, shg_id=meeting.shg_id)
+
+
+@router.get("/reports/collection-sheet/{meeting_id}", response_model=CollectionSheetResponse)
+async def get_reports_collection_sheet(
+    meeting_id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> CollectionSheetResponse:
+    """
+    SPEC Section 8 & 11 reports route alias for collection sheet.
+    """
+    return await get_collection_sheet(id=meeting_id, current_user=current_user, db=db)
+
+
 @router.post("/meetings/{id}/collections", response_model=MeetingBatchCollectionsResponse)
 async def batch_meeting_collections(
     id: uuid.UUID,
@@ -278,8 +313,10 @@ async def batch_meeting_collections(
     idempotency_key_header: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> Response | MeetingBatchCollectionsResponse:
     """
-    SPEC 4.3 & 8: Batch endpoint to record savings and fines for many members at once.
-    Posts a single balanced, atomic journal entry and updates member savings dues idempotently.
+    SPEC 4.3, 8 & Phase 4: Batch endpoint to record savings, EMIs and fines for many members atomically and idempotently.
+    - One journal entry per member per collection, each balanced.
+    - All-or-nothing failure rule.
+    - Row-level locking on active loans.
     """
     idem_key = idempotency_key_header or payload.idempotency_key
 
@@ -294,124 +331,45 @@ async def batch_meeting_collections(
     if not has_access:
         raise AppError(code="NOT_FOUND", message="Meeting not found.", status_code=status.HTTP_404_NOT_FOUND)
 
-    if current_user.role not in {UserRole.ADMIN, UserRole.GROUP_LEADER}:
-        raise AppError(code="FORBIDDEN", message="Permission denied.", status_code=status.HTTP_403_FORBIDDEN)
-
-    scope = f"meeting_batch:{meeting.id}"
-    req_hash = compute_request_hash(payload.model_dump(mode="json"))
-
-    if idem_key:
-        cached = await check_idempotency(db, key=idem_key, scope=scope, request_hash=req_hash)
-        if cached:
-            return Response(
-                content=cached.response_body, status_code=cached.response_status, media_type="application/json"
-            )
-
-    # Fetch cash account (1000) and fine income account (4010)
-    cash_account = await get_account_by_code(db, meeting.shg_id, "1000")
-    fine_account = await get_account_by_code(db, meeting.shg_id, "4010")
-
-    total_savings = Decimal("0.00")
-    total_fines = Decimal("0.00")
-    posting_lines: list[PostingLineDTO] = []
-    processed_count = 0
-
-    for item in payload.collections:
-        s_amt = quantize_money(item.savings_amount)
-        f_amt = quantize_money(item.fine_amount)
-
-        if s_amt == Decimal("0.00") and f_amt == Decimal("0.00"):
-            continue
-
-        member_stmt = select(Member).where(Member.id == item.member_id, Member.shg_id == meeting.shg_id)
-        m_res = await db.execute(member_stmt)
-        member = m_res.scalar_one_or_none()
-        if not member:
-            continue
-
-        savings_acc, _ = await get_or_create_member_sub_accounts(db, meeting.shg_id, member)
-
-        if s_amt > Decimal("0.00"):
-            total_savings += s_amt
-            posting_lines.append(PostingLineDTO(account_id=savings_acc.id, debit=Decimal("0.00"), credit=s_amt))
-
-            # Update savings dues
-            due_stmt = select(SavingsDue).where(SavingsDue.member_id == member.id, SavingsDue.period == payload.period)
-            due_res = await db.execute(due_stmt)
-            due = due_res.scalar_one_or_none()
-            if due:
-                due.amount_paid = quantize_money(due.amount_paid + s_amt)
-                if due.amount_paid >= due.amount_due:
-                    due.status = SavingsDueStatus.PAID
-                else:
-                    due.status = SavingsDueStatus.PARTIAL
-
-        if f_amt > Decimal("0.00"):
-            total_fines += f_amt
-
-        processed_count += 1
-
-    total_collected = total_savings + total_fines
-
-    if total_collected <= Decimal("0.00"):
-        raise AppError(code="INVALID_AMOUNT", message="No non-zero collections to post.", status_code=400)
-
-    # Debit Cash in Hand (1000) for entire batch
-    posting_lines.insert(0, PostingLineDTO(account_id=cash_account.id, debit=total_collected, credit=Decimal("0.00")))
-
-    # Credit Fine Income (4010) if any fines collected
-    if total_fines > Decimal("0.00"):
-        posting_lines.append(PostingLineDTO(account_id=fine_account.id, debit=Decimal("0.00"), credit=total_fines))
-
-    # Post atomic journal entry
-    entry = await post_journal_entry(
+    response, is_cached = await record_meeting_batch_collections(
         db=db,
+        meeting_id=id,
         shg_id=meeting.shg_id,
-        entry_date=meeting.meeting_date,
-        description=f"Batch meeting collections for {meeting.meeting_date} (Period {payload.period})",
-        source_type=JournalSourceType.SAVINGS,
-        lines=posting_lines,
-        posted_by=current_user.id,
-        source_id=meeting.id,
+        payload=payload,
+        current_user=current_user,
+        request=request,
         idempotency_key=idem_key,
     )
 
-    meeting.status = MeetingStatus.HELD
-    await db.commit()
-
-    resp_obj = MeetingBatchCollectionsResponse(
-        total_collected=money_to_str(total_collected),
-        members_count=processed_count,
-        journal_entry_id=entry.id,
-    )
-    resp_json = resp_obj.model_dump_json()
-
-    if idem_key:
-        await save_idempotency_record(
-            db=db,
-            key=idem_key,
-            scope=scope,
-            request_hash=req_hash,
-            response_status=200,
-            response_body=resp_json,
+    if is_cached:
+        return Response(
+            content=response.model_dump_json(),
+            status_code=status.HTTP_200_OK,
+            media_type="application/json",
         )
-        await db.commit()
 
-    await record_audit_log(
-        db=db,
-        action="MEETING_COLLECTIONS_POSTED",
-        entity_type="meetings",
-        entity_id=meeting.id,
-        after={
-            "total_collected": str(total_collected),
-            "members_count": processed_count,
-            "journal_entry_id": str(entry.id),
-        },
-        request=request,
-        actor_id=current_user.id,
-        actor_role=current_user.role.value,
-    )
-    await db.commit()
-    request.state.audit_logged = True
+    return response
 
-    return resp_obj
+
+@router.get("/members/{id}/attendance", response_model=MemberAttendanceResponse)
+async def get_member_attendance(
+    id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> MemberAttendanceResponse:
+    """
+    Returns a member's attendance register across all SHG meetings.
+    """
+    from app.db.models.shg import Member
+    m_stmt = select(Member).where(Member.id == id)
+    m_res = await db.execute(m_stmt)
+    member = m_res.scalar_one_or_none()
+
+    if not member:
+        raise AppError(code="NOT_FOUND", message="Member not found.", status_code=status.HTTP_404_NOT_FOUND)
+
+    has_access = await check_user_has_group_access(current_user, member.shg_id, db)
+    if not has_access:
+        raise AppError(code="NOT_FOUND", message="Member not found.", status_code=status.HTTP_404_NOT_FOUND)
+
+    return await get_member_attendance_history(db=db, member_id=id, shg_id=member.shg_id)

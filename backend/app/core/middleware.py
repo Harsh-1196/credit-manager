@@ -7,6 +7,7 @@ from starlette.responses import Response
 
 from app.core.config import settings
 from app.core.logging import get_logger, request_id_ctx
+from app.core.metrics import HTTP_REQUEST_DURATION_SECONDS, HTTP_REQUESTS_TOTAL
 
 logger = get_logger("app.core.middleware")
 
@@ -26,9 +27,22 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         start_time = time.perf_counter()
         try:
             response = await call_next(request)
-            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+            duration_s = time.perf_counter() - start_time
+            duration_ms = round(duration_s * 1000, 2)
 
             response.headers["X-Request-ID"] = request_id
+
+            if not request.url.path.endswith("/metrics"):
+                HTTP_REQUEST_DURATION_SECONDS.labels(
+                    method=request.method,
+                    endpoint=request.url.path,
+                    status_code=str(response.status_code),
+                ).observe(duration_s)
+                HTTP_REQUESTS_TOTAL.labels(
+                    method=request.method,
+                    endpoint=request.url.path,
+                    status_code=str(response.status_code),
+                ).inc()
 
             logger.info(
                 f"{request.method} {request.url.path} {response.status_code} ({duration_ms}ms)",
@@ -59,7 +73,8 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
-    Enforces security headers: HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy.
+    Enforces security headers: HSTS, X-Content-Type-Options, X-Frame-Options,
+    Referrer-Policy, Permissions-Policy, Content-Security-Policy.
     """
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
@@ -68,11 +83,39 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';"
+        )
 
-        if settings.COOKIE_SECURE:
+        if settings.COOKIE_SECURE or settings.ENVIRONMENT == "production":
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
 
         return response
+
+
+class MaxBodySizeMiddleware(BaseHTTPMiddleware):
+    """
+    Hardening: Limits incoming request payload sizes to 2 MB to prevent DoS attacks.
+    Rejects oversize requests with HTTP 413 Payload Too Large.
+    """
+
+    MAX_BODY_BYTES = 2 * 1024 * 1024  # 2 Megabytes
+
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                length = int(content_length)
+                if length > self.MAX_BODY_BYTES:
+                    return Response(
+                        content='{"code":"PAYLOAD_TOO_LARGE","message":"Request payload exceeds maximum allowed size (2 MB).","details":{}}',
+                        status_code=413,
+                        media_type="application/json",
+                    )
+            except ValueError:
+                pass
+
+        return await call_next(request)
 
 
 class AuditMiddleware(BaseHTTPMiddleware):

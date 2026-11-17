@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -17,15 +17,19 @@ from app.core.errors import (
     validation_exception_handler,
 )
 from app.core.logging import get_logger, setup_logging
+from app.core.metrics import get_metrics_content
 from app.core.middleware import (
     AuditMiddleware,
+    MaxBodySizeMiddleware,
     RequestContextMiddleware,
     SecurityHeadersMiddleware,
 )
+from app.core.telemetry import setup_telemetry
 from app.db.session import engine
 
-# Initialize logging immediately
+# Initialize logging and OpenTelemetry immediately
 setup_logging()
+setup_telemetry()
 logger = get_logger("app.main")
 
 
@@ -45,6 +49,7 @@ app = FastAPI(
 
 # Custom Middlewares
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(MaxBodySizeMiddleware)
 app.add_middleware(AuditMiddleware)
 app.add_middleware(RequestContextMiddleware)
 
@@ -69,3 +74,10 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Direct root-level /health and /ready routes for load balancers & container healthchecks
 app.include_router(health_router, tags=["system"])
+
+
+@app.get("/metrics", tags=["system"], include_in_schema=False)
+async def prometheus_metrics() -> Response:
+    """Prometheus metrics endpoint for scraping."""
+    content, content_type = get_metrics_content()
+    return Response(content=content, media_type=content_type)

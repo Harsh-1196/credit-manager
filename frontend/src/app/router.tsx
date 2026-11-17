@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { LoginPage } from '../features/auth/LoginPage';
 import { ProtectedRoute } from '../lib/auth/ProtectedRoute';
 import { AppLayout } from '../components/layout/AppLayout';
+import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { GroupsListPage } from '../features/groups/GroupsListPage';
 import { GroupDetailPage } from '../features/groups/GroupDetailPage';
 import { MembersListPage } from '../features/members/MembersListPage';
@@ -9,8 +10,12 @@ import { MemberDetailPage } from '../features/members/MemberDetailPage';
 import { LoanApplicationPage } from '../features/loans/LoanApplicationPage';
 import { ApprovalsQueuePage } from '../features/loans/ApprovalsQueuePage';
 import { LoanDetailPage } from '../features/loans/LoanDetailPage';
+import { MeetingCollectionPage } from '../features/meetings/MeetingCollectionPage';
+import { ReportsPage } from '../features/reports/ReportsPage';
+import { SettingsPage } from '../features/settings/SettingsPage';
 import { UsersListPage } from '../features/users/UsersListPage';
 import { AuditLogPage } from '../features/audit/AuditLogPage';
+import { ReconciliationPage } from '../features/reconciliation/ReconciliationPage';
 import { StyleguidePage } from '../features/styleguide/StyleguidePage';
 
 export const router = createBrowserRouter([
@@ -26,7 +31,11 @@ export const router = createBrowserRouter([
         children: [
           {
             path: '/',
-            element: <Navigate to="/groups" replace />,
+            element: <Navigate to="/dashboard" replace />,
+          },
+          {
+            path: '/dashboard',
+            element: <DashboardPage />,
           },
           {
             path: '/groups',
@@ -63,6 +72,24 @@ export const router = createBrowserRouter([
             element: <LoanDetailPage />,
           },
           {
+            path: '/meetings/:id/collection',
+            element: <MeetingCollectionPage />,
+          },
+          {
+            path: '/reports',
+            element: <ReportsPage />,
+          },
+          {
+            path: '/settings',
+            element: <ProtectedRoute allowedRoles={['ADMIN', 'GROUP_LEADER']} />,
+            children: [
+              {
+                path: '',
+                element: <SettingsPage />,
+              },
+            ],
+          },
+          {
             path: '/users',
             element: <ProtectedRoute allowedRoles={['ADMIN']} />,
             children: [
@@ -79,6 +106,16 @@ export const router = createBrowserRouter([
               {
                 path: '',
                 element: <AuditLogPage />,
+              },
+            ],
+          },
+          {
+            path: '/reconciliation',
+            element: <ProtectedRoute allowedRoles={['ADMIN']} />,
+            children: [
+              {
+                path: '',
+                element: <ReconciliationPage />,
               },
             ],
           },

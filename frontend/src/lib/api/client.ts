@@ -27,6 +27,12 @@ import type {
   LoginRequest,
   LoginResponse,
   MeResponse,
+  AttendanceRecord,
+  MeetingStatus,
+  CollectionSheetResponse,
+  MeetingBatchCollectionsRequest,
+  MeetingBatchCollectionsResponse,
+  MemberAttendanceResponse,
   MeetingDetailResponse,
   MeetingResponse,
   MemberCreateRequest,
@@ -43,6 +49,21 @@ import type {
   UserCreateRequest,
   UserResponse,
   UserUpdateRequest,
+  AuditLogFilters,
+  AuditLogListResponse,
+  AuditVerificationResponse,
+  ReconciliationRunResponse,
+  WorkerStatusResponse,
+  DashboardResponse,
+  GroupDashboardReportResponse,
+  MemberStatementReportResponse,
+  GroupLedgerReportResponse,
+  LoanPortfolioReportResponse,
+  ChatRequest,
+  ChatResponse,
+  DraftCollectionRequest,
+  DraftCollectionResponse,
+  ToolCallRecord,
 } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -180,6 +201,19 @@ async function request<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+async function requestBlob(path: string): Promise<Blob> {
+  const url = `${API_BASE_URL}${path}`;
+  const headers = new Headers();
+  if (currentAccessToken) {
+    headers.set('Authorization', `Bearer ${currentAccessToken}`);
+  }
+  const response = await fetch(url, { headers, credentials: 'include' });
+  if (!response.ok) {
+    throw new Error(`Failed to download: ${response.statusText}`);
+  }
+  return response.blob();
 }
 
 export const api = {
@@ -394,6 +428,51 @@ export const api = {
     get: async (meetingId: string): Promise<MeetingDetailResponse> => {
       return request<MeetingDetailResponse>(`/meetings/${meetingId}`);
     },
+    create: async (groupId: string, body: { meeting_date: string; agenda?: string }): Promise<MeetingResponse> => {
+      return request<MeetingResponse>(`/groups/${groupId}/meetings`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    update: async (
+      meetingId: string,
+      body: { status?: MeetingStatus; agenda?: string; minutes?: string }
+    ): Promise<MeetingResponse> => {
+      return request<MeetingResponse>(`/meetings/${meetingId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    updateAttendance: async (
+      meetingId: string,
+      body: { attendance: AttendanceRecord[] }
+    ): Promise<MeetingDetailResponse> => {
+      return request<MeetingDetailResponse>(`/meetings/${meetingId}/attendance`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      });
+    },
+    getCollectionSheet: async (meetingId: string): Promise<CollectionSheetResponse> => {
+      return request<CollectionSheetResponse>(`/meetings/${meetingId}/collection-sheet`);
+    },
+    recordCollections: async (
+      meetingId: string,
+      body: MeetingBatchCollectionsRequest,
+      idempotencyKey?: string
+    ): Promise<MeetingBatchCollectionsResponse> => {
+      const headers: Record<string, string> = {};
+      if (idempotencyKey) {
+        headers['Idempotency-Key'] = idempotencyKey;
+      }
+      return request<MeetingBatchCollectionsResponse>(`/meetings/${meetingId}/collections`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+    },
+    getMemberAttendance: async (memberId: string): Promise<MemberAttendanceResponse> => {
+      return request<MemberAttendanceResponse>(`/members/${memberId}/attendance`);
+    },
   },
 
   loans: {
@@ -485,4 +564,152 @@ export const api = {
       return request<PortfolioMetricsResponse>(`/loans/metrics/portfolio${qs ? `?${qs}` : ''}`);
     },
   },
+  audit: {
+    list: async (params?: AuditLogFilters): Promise<AuditLogListResponse> => {
+      const sp = new URLSearchParams();
+      if (params?.actor_id) sp.set('actor_id', params.actor_id);
+      if (params?.entity_type) sp.set('entity_type', params.entity_type);
+      if (params?.action) sp.set('action', params.action);
+      if (params?.from_date) sp.set('from_date', params.from_date);
+      if (params?.to_date) sp.set('to_date', params.to_date);
+      if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+      if (params?.offset !== undefined) sp.set('offset', String(params.offset));
+      const qs = sp.toString();
+      return request<AuditLogListResponse>(`/audit/logs${qs ? `?${qs}` : ''}`);
+    },
+    verify: async (): Promise<AuditVerificationResponse> => {
+      return request<AuditVerificationResponse>('/audit/verify', {
+        method: 'POST',
+      });
+    },
+    exportCsv: async (params?: AuditLogFilters): Promise<Blob> => {
+      const sp = new URLSearchParams();
+      if (params?.actor_id) sp.set('actor_id', params.actor_id);
+      if (params?.entity_type) sp.set('entity_type', params.entity_type);
+      if (params?.action) sp.set('action', params.action);
+      if (params?.from_date) sp.set('from_date', params.from_date);
+      if (params?.to_date) sp.set('to_date', params.to_date);
+      const qs = sp.toString();
+      return requestBlob(`/audit/export${qs ? `?${qs}` : ''}`);
+    },
+  },
+  reconciliation: {
+    run: async (): Promise<ReconciliationRunResponse> => {
+      return request<ReconciliationRunResponse>('/reconciliation/run', {
+        method: 'POST',
+      });
+    },
+    getLatest: async (): Promise<ReconciliationRunResponse | null> => {
+      return request<ReconciliationRunResponse | null>('/reconciliation/latest');
+    },
+    listRuns: async (limit = 20): Promise<ReconciliationRunResponse[]> => {
+      return request<ReconciliationRunResponse[]>(`/reconciliation/runs?limit=${limit}`);
+    },
+  },
+  system: {
+    getWorkerStatus: async (): Promise<WorkerStatusResponse> => {
+      return request<WorkerStatusResponse>('/system/worker-status');
+    },
+  },
+  dashboard: {
+    get: async (params?: { shg_id?: string; member_id?: string }): Promise<DashboardResponse> => {
+      const sp = new URLSearchParams();
+      if (params?.shg_id) sp.set('shg_id', params.shg_id);
+      if (params?.member_id) sp.set('member_id', params.member_id);
+      const qs = sp.toString();
+      return request<DashboardResponse>(`/dashboard${qs ? `?${qs}` : ''}`);
+    },
+  },
+  reports: {
+    getGroupDashboard: async (shgId: string): Promise<GroupDashboardReportResponse> => {
+      return request<GroupDashboardReportResponse>(`/reports/group-dashboard?shg_id=${shgId}&format=json`);
+    },
+    exportGroupDashboardCsv: async (shgId: string): Promise<Blob> => {
+      return requestBlob(`/reports/group-dashboard?shg_id=${shgId}&format=csv`);
+    },
+    getMemberStatement: async (memberId: string): Promise<MemberStatementReportResponse> => {
+      return request<MemberStatementReportResponse>(`/reports/member-statement?member_id=${memberId}&format=json`);
+    },
+    exportMemberStatementCsv: async (memberId: string): Promise<Blob> => {
+      return requestBlob(`/reports/member-statement?member_id=${memberId}&format=csv`);
+    },
+    getGroupLedger: async (shgId: string): Promise<GroupLedgerReportResponse> => {
+      return request<GroupLedgerReportResponse>(`/reports/group-ledger?shg_id=${shgId}&format=json`);
+    },
+    exportGroupLedgerCsv: async (shgId: string): Promise<Blob> => {
+      return requestBlob(`/reports/group-ledger?shg_id=${shgId}&format=csv`);
+    },
+    getLoanPortfolio: async (shgId: string): Promise<LoanPortfolioReportResponse> => {
+      return request<LoanPortfolioReportResponse>(`/reports/loan-portfolio?shg_id=${shgId}&format=json`);
+    },
+    exportLoanPortfolioCsv: async (shgId: string): Promise<Blob> => {
+      return requestBlob(`/reports/loan-portfolio?shg_id=${shgId}&format=csv`);
+    },
+    exportCollectionSheetCsv: async (meetingId: string): Promise<Blob> => {
+      return requestBlob(`/reports/collection-sheet?meeting_id=${meetingId}&format=csv`);
+    },
+  },
+  ai: {
+    chat: async (body: ChatRequest): Promise<ChatResponse> => {
+      return request<ChatResponse>('/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    streamChat: async function* (body: ChatRequest): AsyncGenerator<{ content?: string; tool_calls?: ToolCallRecord[]; done?: boolean }> {
+      const url = `${API_BASE_URL}/ai/chat`;
+      const headers = new Headers();
+      headers.set('Content-Type', 'application/json');
+      headers.set('Accept', 'text/event-stream');
+      if (currentAccessToken) {
+        headers.set('Authorization', `Bearer ${currentAccessToken}`);
+      }
+      const csrf = getCsrfToken();
+      if (csrf) {
+        headers.set('X-CSRF-Token', csrf);
+      }
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+        credentials: 'same-origin',
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ code: 'AI_ERROR', message: res.statusText }));
+        throw new ApiException(res.status, errorData);
+      }
+      const reader = res.body?.getReader();
+      if (!reader) return;
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr) {
+              try {
+                const parsed = JSON.parse(jsonStr);
+                yield parsed;
+              } catch {
+                // ignore parse error on partial lines
+              }
+            }
+          }
+        }
+      }
+    },
+    draftCollection: async (body: DraftCollectionRequest): Promise<DraftCollectionResponse> => {
+      return request<DraftCollectionResponse>('/ai/draft-collection', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+  },
 };
+
+export const apiClient = api;

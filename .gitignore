@@ -26,14 +26,19 @@ wheels/
 .ruff_cache/
 .pytest_cache/
 .hypothesis/
+.coverage
+.coverage.*
+htmlcov/
 *.db
 *.sqlite3
 
 # Node / Frontend
 node_modules/
 .npm
+.vite/
 dist/
 dist-ssr/
+coverage/
 *.local
 
 # Environment variables & local secrets

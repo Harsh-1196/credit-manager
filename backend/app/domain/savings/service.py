@@ -12,6 +12,7 @@ from app.db.models.savings import SavingsDue, SavingsDueStatus
 from app.db.models.shg import GroupSettings, Member, MemberStatus
 from app.domain.ledger.accounts import get_account_by_code, get_or_create_member_sub_accounts
 from app.domain.ledger.posting import PostingLineDTO, post_journal_entry
+from app.domain.outbox.service import create_outbox_event
 
 
 async def get_member_savings_balance(
@@ -223,7 +224,23 @@ async def collect_member_savings(
 
     await db.flush()
 
-    # 5. Return updated due and new total savings balance
+    # 5. Record transactional outbox event
+    await create_outbox_event(
+        db=db,
+        event_type="SAVINGS_COLLECTED",
+        aggregate_type="SAVINGS",
+        aggregate_id=member_id,
+        shg_id=shg_id,
+        payload={
+            "member_id": str(member_id),
+            "period": period,
+            "amount": str(amount),
+            "fine_amount": str(fine_amount),
+            "total_cash": str(total_cash_in),
+        },
+    )
+
+    # 6. Return updated due and new total savings balance
     new_balance = await get_member_savings_balance(db, shg_id, member_id)
     return due, new_balance
 
@@ -300,6 +317,20 @@ async def withdraw_member_savings(
         posted_by=posted_by,
         source_id=member.id,
         idempotency_key=idempotency_key,
+    )
+
+    # 4. Record transactional outbox event
+    await create_outbox_event(
+        db=db,
+        event_type="SAVINGS_WITHDRAWN",
+        aggregate_type="SAVINGS",
+        aggregate_id=member_id,
+        shg_id=shg_id,
+        payload={
+            "member_id": str(member_id),
+            "amount": str(amount),
+            "reason": reason,
+        },
     )
 
     new_balance = await get_member_savings_balance(db, shg_id, member_id)

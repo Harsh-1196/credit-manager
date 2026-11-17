@@ -14,7 +14,9 @@ from app.db.models.loans import (
     LoanStatusHistory,
 )
 from app.db.models.meetings import Attendance, AttendanceStatus, Meeting, MeetingStatus
+from app.db.models.outbox import DashboardReadModel, OutboxConsumerLog, OutboxEvent, OutboxEventStatus
 from app.db.models.platform import AuditLog, IdempotencyRecord
+from app.db.models.reconciliation import ReconciliationRun, ReconciliationStatus
 from app.db.models.savings import SavingsDue, SavingsDueStatus
 from app.db.models.shg import (
     SHG,
@@ -58,4 +60,10 @@ __all__ = [
     "LoanSchedule",
     "LoanScheduleStatus",
     "LoanStatusHistory",
+    "OutboxEvent",
+    "OutboxEventStatus",
+    "OutboxConsumerLog",
+    "DashboardReadModel",
+    "ReconciliationRun",
+    "ReconciliationStatus",
 ]

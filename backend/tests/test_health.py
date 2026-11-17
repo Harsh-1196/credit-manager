@@ -63,3 +63,13 @@ async def test_custom_app_error_format(client: AsyncClient) -> None:
     assert data["details"]["current_status"] == "CLOSED"
     assert data["details"]["target_status"] == "APPROVED"
     assert "request_id" in data
+
+
+@pytest.mark.asyncio
+async def test_prometheus_metrics_endpoint(client: AsyncClient) -> None:
+    response = await client.get("/metrics")
+    assert response.status_code == status.HTTP_200_OK
+    assert "text/plain" in response.headers.get("content-type", "")
+    content = response.text
+    assert "http_request_duration_seconds" in content
+    assert "http_requests_total" in content

@@ -11,6 +11,7 @@ import { MemberExitModal } from './MemberExitModal';
 import { MemberPassbookTab } from './MemberPassbookTab';
 import { MemberSavingsTab } from './MemberSavingsTab';
 import { MemberLoansTab } from './MemberLoansTab';
+import { MemberAttendanceTab } from './MemberAttendanceTab';
 import {
   User,
   ArrowLeft,
@@ -19,13 +20,14 @@ import {
   BookOpen,
   PiggyBank,
   LogOut,
+  Users,
 } from 'lucide-react';
 
 export const MemberDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'savings' | 'passbook' | 'loans'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'savings' | 'passbook' | 'loans' | 'attendance'>('overview');
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const canManage = user?.role === 'ADMIN' || user?.role === 'GROUP_LEADER';
@@ -215,6 +217,19 @@ export const MemberDetailPage: React.FC = () => {
             <CreditCard className="w-3.5 h-3.5" />
             Credit & Loan Register
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('attendance')}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+              activeTab === 'attendance'
+                ? 'bg-[var(--accent-subtle)] text-[var(--primary)] font-semibold'
+                : 'text-[var(--muted-ink)] hover:text-[var(--ink)]'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            Attendance Register
+          </button>
         </div>
       </div>
 
@@ -369,6 +384,11 @@ export const MemberDetailPage: React.FC = () => {
           shgId={member.shg_id}
           memberName={member.full_name}
         />
+      )}
+
+      {/* Tab 5: Attendance (Phase 4) */}
+      {activeTab === 'attendance' && (
+        <MemberAttendanceTab memberId={member.id} />
       )}
 
       {/* Exit Modal */}

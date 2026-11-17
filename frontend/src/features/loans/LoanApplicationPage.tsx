@@ -405,9 +405,31 @@ export const LoanApplicationPage: React.FC = () => {
               {/* Form Action Buttons */}
               <div className="pt-4 border-t border-[var(--border)] flex flex-col gap-2">
                 {hasBlockers && (
-                  <div className="p-2.5 rounded bg-surface-sunken border border-danger/30 text-xs text-danger flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>Submission blocked: Resolve failing eligibility checks first.</span>
+                  <div className="p-3 rounded bg-surface-sunken border border-danger/30 text-xs text-danger space-y-2">
+                    <div className="flex items-center gap-2 font-semibold">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>Submission blocked: Resolve failing eligibility checks first.</span>
+                    </div>
+                    <ul className="list-disc pl-5 space-y-1 text-[11px] text-[var(--ink)]">
+                      {blockerChecks.map((check) => (
+                        <li key={check.code}>
+                          <span className="font-semibold text-danger">{check.name}:</span>{' '}
+                          {check.message}
+                          {check.code === 'SAVINGS_MULTIPLE' && Number(check.threshold_value || 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setValue('principal', check.threshold_value || '0.00')}
+                              className="ml-2 text-[10px] text-[var(--primary)] underline font-medium hover:opacity-80"
+                            >
+                              Set to maximum eligible (₹{check.threshold_value})
+                            </button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-[10px] text-[var(--muted-ink)] pt-1 border-t border-border/50">
+                      Tip: You can still click <strong>Save as Draft</strong> to save this loan application without immediate submission.
+                    </p>
                   </div>
                 )}
 

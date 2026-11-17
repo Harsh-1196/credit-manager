@@ -5,10 +5,13 @@ import {
   Users,
   Building2,
   ShieldCheck,
-  Palette,
   UserCheck,
   CheckSquare,
   FilePlus,
+  Scale,
+  LayoutDashboard,
+  FileSpreadsheet,
+  Sliders,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -47,6 +50,11 @@ export const Sidebar: React.FC = () => {
           Operations
         </div>
 
+        <NavLink to="/dashboard" className={navLinkClass}>
+          <LayoutDashboard className="w-4 h-4 shrink-0" />
+          <span>Dashboard</span>
+        </NavLink>
+
         <NavLink to="/groups" className={navLinkClass}>
           <Building2 className="w-4 h-4 shrink-0" />
           <span>{role === 'MEMBER' ? 'My Group' : 'Groups'}</span>
@@ -70,6 +78,18 @@ export const Sidebar: React.FC = () => {
           <span>Apply for Loan</span>
         </NavLink>
 
+        <NavLink to="/reports" className={navLinkClass}>
+          <FileSpreadsheet className="w-4 h-4 shrink-0" />
+          <span>Reports</span>
+        </NavLink>
+
+        {(role === 'ADMIN' || role === 'GROUP_LEADER') && (
+          <NavLink to="/settings" className={navLinkClass}>
+            <Sliders className="w-4 h-4 shrink-0" />
+            <span>Settings</span>
+          </NavLink>
+        )}
+
         {role === 'ADMIN' && (
           <>
             <div className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-ink)]">
@@ -78,6 +98,10 @@ export const Sidebar: React.FC = () => {
             <NavLink to="/users" className={navLinkClass}>
               <UserCheck className="w-4 h-4 shrink-0" />
               <span>User Directory</span>
+            </NavLink>
+            <NavLink to="/reconciliation" className={navLinkClass}>
+              <Scale className="w-4 h-4 shrink-0" />
+              <span>Reconciliation</span>
             </NavLink>
           </>
         )}
@@ -88,14 +112,6 @@ export const Sidebar: React.FC = () => {
             <span>Audit Trail</span>
           </NavLink>
         )}
-
-        <div className="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-ink)]">
-          System
-        </div>
-        <NavLink to="/styleguide" className={navLinkClass}>
-          <Palette className="w-4 h-4 shrink-0" />
-          <span>Design Tokens</span>
-        </NavLink>
       </nav>
 
       {/* User Status in Sidebar Footer */}

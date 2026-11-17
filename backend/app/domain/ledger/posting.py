@@ -8,8 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.errors import AppError
+from app.core.metrics import LEDGER_POSTS_TOTAL
 from app.core.money import quantize_money
 from app.db.models.ledger import Account, JournalEntry, JournalLine, JournalSourceType
+from app.domain.outbox.service import create_outbox_event
 
 
 @dataclass
@@ -191,6 +193,12 @@ async def post_journal_entry(
 
     await db.flush()
 
+    # Increment Prometheus ledger postings metric
+    try:
+        LEDGER_POSTS_TOTAL.labels(source_type=str(source_type.value if hasattr(source_type, 'value') else source_type), shg_id=str(shg_id)).inc()
+    except Exception:
+        pass
+
     # Eagerly load lines for caller convenience
     stmt_reload = (
         select(JournalEntry)
@@ -248,7 +256,7 @@ async def reverse_journal_entry(
     reversal_date = entry_date or date.today()
     description = f"Reversal of entry {original.id}: {reason.strip()}"
 
-    return await post_journal_entry(
+    reversal_entry = await post_journal_entry(
         db=db,
         shg_id=shg_id,
         entry_date=reversal_date,
@@ -259,3 +267,19 @@ async def reverse_journal_entry(
         source_id=original.id,
         reverses_entry_id=original.id,
     )
+
+    await create_outbox_event(
+        db=db,
+        event_type="ENTRY_REVERSED",
+        aggregate_type="JOURNAL_ENTRY",
+        aggregate_id=reversal_entry.id,
+        shg_id=shg_id,
+        payload={
+            "entry_id": str(reversal_entry.id),
+            "reversed_entry_id": str(original.id),
+            "original_source_type": original.source_type.value,
+            "reason": reason,
+        },
+    )
+
+    return reversal_entry

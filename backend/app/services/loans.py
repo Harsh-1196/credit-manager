@@ -24,6 +24,7 @@ from app.domain.loans.allocation import (
 )
 from app.domain.loans.schedule import calculate_loan_schedule
 from app.domain.loans.state_machine import LoanStateMachine
+from app.domain.outbox.service import create_outbox_event
 
 
 async def get_account_cash_balance(db: AsyncSession, account_id: uuid.UUID) -> Decimal:
@@ -57,7 +58,7 @@ async def get_disburse_preview(
     cash_balance = await get_account_cash_balance(db, cash_acc.id)
     net_disbursed = quantize_money(loan.principal - loan.processing_fee)
 
-    member_loans_acc, _ = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
+    member_savings_acc, member_loans_acc = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
     has_sufficient = cash_balance >= net_disbursed
 
     journal_lines = [
@@ -194,7 +195,7 @@ async def disburse_loan(
         loan.schedule.append(sched_entry)
 
     # 5. Post double-entry journal entry
-    member_loans_acc, _ = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
+    member_savings_acc, member_loans_acc = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
     lines = [
         PostingLineDTO(account_id=member_loans_acc.id, debit=loan.principal, credit=Decimal("0.00")),
         PostingLineDTO(account_id=cash_acc.id, debit=Decimal("0.00"), credit=net_disbursed),
@@ -242,6 +243,24 @@ async def disburse_loan(
         to_status=LoanStatus.ACTIVE,
         actor=current_user,
         reason="Repayment schedule active",
+    )
+
+    # 7. Record transactional outbox event
+    await create_outbox_event(
+        db=db,
+        event_type="LOAN_DISBURSED",
+        aggregate_type="LOAN",
+        aggregate_id=loan.id,
+        shg_id=shg_id,
+        payload={
+            "loan_id": str(loan.id),
+            "loan_number": loan.loan_number,
+            "member_id": str(loan.member_id),
+            "principal": str(loan.principal),
+            "processing_fee": str(loan.processing_fee),
+            "net_disbursed": str(net_disbursed),
+            "disbursed_at": loan.disbursed_at.isoformat() if loan.disbursed_at else None,
+        },
     )
 
     await db.flush()
@@ -419,7 +438,7 @@ async def repay_loan(
 
     # 5. Post multi-line balanced double-entry journal entry
     cash_acc = await get_account_by_code(db, shg_id, "1000")
-    member_loans_acc, _ = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
+    member_savings_acc, member_loans_acc = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
 
     posting_lines = [
         PostingLineDTO(account_id=cash_acc.id, debit=alloc_result.total_payment, credit=Decimal("0.00")),
@@ -497,6 +516,25 @@ async def repay_loan(
                 expected_version=expected_version,
             )
 
+    # 7. Record transactional outbox event
+    await create_outbox_event(
+        db=db,
+        event_type="LOAN_REPAID",
+        aggregate_type="LOAN",
+        aggregate_id=loan.id,
+        shg_id=shg_id,
+        payload={
+            "loan_id": str(loan.id),
+            "loan_number": loan.loan_number,
+            "member_id": str(loan.member_id),
+            "amount": str(alloc_result.total_payment),
+            "principal_paid": str(alloc_result.total_principal),
+            "interest_paid": str(alloc_result.total_interest),
+            "penalty_paid": str(alloc_result.total_penalty),
+            "is_fully_paid": alloc_result.is_loan_fully_paid,
+        },
+    )
+
     await db.flush()
     return loan, alloc_result
 
@@ -556,7 +594,7 @@ async def write_off_loan(
 
     # Post journal entry: Debit Write-offs (5010), Credit Loans Receivable (1100-{member})
     write_off_acc = await get_account_by_code(db, shg_id, "5010")
-    member_loans_acc, _ = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
+    member_savings_acc, member_loans_acc = await get_or_create_member_sub_accounts(db, shg_id, loan.member)
 
     lines = [
         PostingLineDTO(account_id=write_off_acc.id, debit=unpaid_principal, credit=Decimal("0.00")),

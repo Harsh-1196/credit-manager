@@ -9,7 +9,10 @@ export interface FormatMoneyOptions {
  * Parses any monetary string or number representation into Decimal.
  * Strictly avoids parseFloat to preserve decimal precision.
  */
-export function parseMoney(amount: string | number | Decimal): Decimal {
+export function parseMoney(amount: string | number | Decimal | null | undefined): Decimal {
+  if (amount === null || amount === undefined) {
+    return new Decimal(0);
+  }
   if (amount instanceof Decimal) {
     return amount;
   }
@@ -57,4 +60,39 @@ export function formatIndianMoney(
   const sign = isNegative ? "-" : "";
 
   return `${sign}${symbol}${formattedNumber}`;
+}
+
+/**
+ * Format an amount into an Indian abbreviated string (e.g., 1.2L, 85.4K, 2.5Cr),
+ * specifically designed for headline key figures on the dashboard.
+ * Returns both the abbreviated representation and the full formatted string for tooltips.
+ */
+export function formatIndianAbbreviated(
+  amount: string | number | Decimal | null | undefined,
+  options: { includeSymbol?: boolean } = {}
+): { abbreviated: string; full: string } {
+  const d = parseMoney(amount);
+  const full = formatIndianMoney(d, { includeSymbol: options.includeSymbol ?? true, decimals: 2 });
+  const symbol = (options.includeSymbol ?? true) ? "₹" : "";
+  const abs = d.abs();
+  const sign = d.isNegative() ? "-" : "";
+
+  let numStr = "";
+  if (abs.gte(10000000)) {
+    const cr = abs.dividedBy(10000000);
+    numStr = `${cr.toFixed(1).replace(/\.0$/, "")}Cr`;
+  } else if (abs.gte(100000)) {
+    const lk = abs.dividedBy(100000);
+    numStr = `${lk.toFixed(1).replace(/\.0$/, "")}L`;
+  } else if (abs.gte(1000)) {
+    const th = abs.dividedBy(1000);
+    numStr = `${th.toFixed(1).replace(/\.0$/, "")}K`;
+  } else {
+    numStr = abs.toFixed(2);
+  }
+
+  return {
+    abbreviated: `${sign}${symbol}${numStr}`,
+    full,
+  };
 }
