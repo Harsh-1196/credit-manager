@@ -26,6 +26,7 @@ Experience the human-centered, editorial ruled-ledger aesthetic designed for tac
 | **Member Passbook (Screen 5)**<br>*Chronological sub-account ledger entries with running balance to the paisa* | ![Passbook Light](docs/screenshots/passbook_light.png) | ![Passbook Dark](docs/screenshots/passbook_dark.png) |
 | **Loan Amortization & Lifecycle (Screen 8)**<br>*3-column asymmetric view: disbursal timeline, schedule, and maker-checker actions* | ![Loan Detail Light](docs/screenshots/loan_detail_light.png) | ![Loan Detail Dark](docs/screenshots/loan_detail_dark.png) |
 | **Cryptographic Audit Trail (Screen 11)**<br>*SHA-256 block hash linking, chain status badge, and state diff drawer* | ![Audit Trail Light](docs/screenshots/audit_log_light.png) | ![Audit Trail Dark](docs/screenshots/audit_log_dark.png) |
+| **Financial Reports & Statements (Screen 10)**<br>*Group balance sheet, member statements, loan portfolio PAR aging, CSV export* | ![Reports Light](docs/screenshots/reports_light.png) | ![Reports Dark](docs/screenshots/reports_dark.png) |
 | **AI Assistant Side Panel (Screen 6b)**<br>*Bounded read-only assistant drawer displaying streaming responses and tool badges* | ![Assistant Panel Light](docs/screenshots/assistant_panel_light.png) | ![Assistant Panel Dark](docs/screenshots/assistant_panel_dark.png) |
 
 ---
